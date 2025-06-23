@@ -1,12 +1,17 @@
 package Java_Reboot.Strange_Classes;
 
+// 单独导入外部三个'独立接口' (具体到'文件名', 关键字import)
+import Java_Reboot.Strange_Classes.Frameworks.Flyable;
+import Java_Reboot.Strange_Classes.Frameworks.Runable;
+import Java_Reboot.Strange_Classes.Frameworks.Swimmable;
+
 /*
 interface Flyable{ void fly(); }
 interface Runable{ void run(); } 
 interface Swimmable{ void swim(); }
  */
 
-// 注: 这里的接口来自同包(文件夹)下的VehicleAddons.java中, 单独拆出来了
+// 
 class SuperVehicle implements Flyable, Runable, Swimmable{
   // 神奇载具将拥有的各种奇妙功能(接口)
   public void fly(){
