@@ -16,4 +16,5 @@
 简单的了解了了下Character类和String类, 整理了对应的笔记
 完成了对Character和String类的大部分实验
 了解了了StringBuffer类和StringBuilder类, 知道了他们之间的区别以及通用方法
+完成了StringBuffer和StringBuilder的实验, 整理了对应的笔记
 2025.06.24
