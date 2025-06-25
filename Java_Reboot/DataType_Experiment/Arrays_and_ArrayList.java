@@ -1,5 +1,6 @@
 package Java_Reboot.DataType_Experiment;
 import java.util.Arrays; // 导入Arrays类
+import java.util.Collections;
 import java.util.ArrayList; // 导入 ArrayList类
 
 public class Arrays_and_ArrayList{
@@ -91,6 +92,29 @@ public class Arrays_and_ArrayList{
     System.out.println(".copyOf()了empty[]的内容, 指定新数组empty_enlarge大小为10: "+Arrays.toString(empty_enlarge)); // 可以看到后面多了5个0
 
 
+    /* ArrayList实验区 */
+    System.out.println("\n现在是ArrayList时间");
+    ArrayList<Integer> alist = new ArrayList<>(); // news: alist卖掉了 (悲
+    alist.add(3); alist.add(2); alist.add(1); // 追加元素
+    System.out.println("alist当前的内容为: " + alist.toString()); //toString()转字符串
+    ArrayList<Integer> blist = new ArrayList<>();
+    blist.add(6); blist.add(8); blist.add(6);
+    System.out.println("blist当前的内容为: " + blist.toString());
+    alist.addAll(blist);
+    System.out.println("alist.addAll()拼接blist的结果为: " +alist.toString());
+    System.out.println("alist当前的长度为: " + alist.size());
+    alist.set(4, 9); // 替换下标4的元素内容为 9 (8 -> 9)
+    System.out.println("替换了alist下标为4的内容: " + alist.toString()); 
+    System.out.println("alist现在是否包含0? " + alist.contains(0)); // false
+    System.out.println("alist中'6'出现的最后一次的下标: " + alist.lastIndexOf(6)); // 5
+    alist.removeAll(blist); // alist移除blist中'包含'的元素, 用法和上面的addAll()一致
+    System.out.println(alist.toString()); // 6不见了
+    alist.clear(); // 清空了
+    System.out.println("使用.clear()清空了alist的内容: "+ alist.toString());
+    System.out.println("现在alist isEmpty吗? " + alist.isEmpty()); // true
+    System.out.println(blist.subList(0,2).toString());
+    System.out.println("\n");
+    
 
   }
 
