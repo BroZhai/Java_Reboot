@@ -18,3 +18,6 @@
 了解了了StringBuffer类和StringBuilder类, 知道了他们之间的区别以及通用方法
 完成了StringBuffer和StringBuilder的实验, 整理了对应的笔记
 2025.06.24
+
+具体了解了下数组和列表的区别, 整理了对应的笔记
+2025.06.25
