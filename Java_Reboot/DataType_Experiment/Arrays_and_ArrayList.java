@@ -35,6 +35,18 @@ public class Arrays_and_ArrayList{
       System.out.print(cur_num + " ");
     }
     System.out.println("\n在有序的num_arr中用Array的二分查找'5'的下标为: "+Arrays.binarySearch(num_arr, 5));
+    System.out.println("将其转换为'字符串'进行输出: " + Arrays.toString(num_arr) + ", 哇哦竟然自带方括号"); // Arrays.toString() 一维数组转字符串
+    System.out.println("再来看看二维数组的deepToSting(): " + Arrays.deepToString(num_2d_arr)); // Arrays.deepToString() 二维数组转字符串
+
+    /* Arrays.sort() 不支持二维数组的排序 XD */
+
+    // Arrays.sort(num_2d_arr);
+    /*System.out.println("\n对num_2d_arr用Arrays.sort()进行排序得: ");
+    for(int[] cur_arr: num_2d_arr){ 
+      for(int cur_element: cur_arr){ 
+        System.out.print(cur_element + " ");
+      }
+    }*/
 
     System.out.println("\n玩点有意思的");
 
@@ -50,16 +62,35 @@ public class Arrays_and_ArrayList{
       System.out.print(curr_char);
     }
 
-    System.out.println();
-    /* Arrays.sort() 不支持二维数组的排序 XD */
+    System.out.println("\n");
 
-    // Arrays.sort(num_2d_arr);
-    /*System.out.println("\n对num_2d_arr用Arrays.sort()进行排序得: ");
-    for(int[] cur_arr: num_2d_arr){ 
-      for(int cur_element: cur_arr){ 
-        System.out.print(cur_element + " ");
-      }
-    }*/
+    Integer[] big_Integers = {114, 514, 191, 981, 0};
+    // 注: 此处的参数'big_Ingegers'要是'对象'  (e.g. Integer[], String[]), 像int[]这些'字面量'一律只会被视为'一种元素'
+    ArrayList<Integer> big_ArrayList = new ArrayList<>(Arrays.asList(big_Integers)); 
+    System.out.println("big_Integers的长度为: " + big_Integers.length);
+    System.out.println("从big_Integers通过Arrays.asList()转成的big_Arraylist的长度是: "+ big_ArrayList.size());
+    big_ArrayList.add(511); // 往转成的ArrayList中追加一个'新元素'
+    System.out.print("往big_Arraylist中追加了一个新元素 511: ");
+    for(Integer cur_int : big_ArrayList){
+      System.out.print(cur_int+" ");
+    }
+    System.out.println("\n可以看到big_Integers成功转成了ArrayList\n");
+
+    // Arrays.equals(数组1, 数组2), 判断这两个数组是否'完全相等' (包括内容 & 顺序)
+    int[] left = {2,3,1};
+    int[] right = {2,1,3};
+    System.out.println("left[] 和 right[]数组是equals()的吗? " + Arrays.equals(left, right)); // false
+    int[] empty = new int[5]; // 一会儿要fill()这个, 现在这里提前声明大小
+    System.out.println("现在empty中的内容为: " + Arrays.toString(empty));
+    Arrays.fill(empty, 6);
+    System.out.println("全部填充.fill()内容后为: " + Arrays.toString(empty));
+    Arrays.fill(empty, 1,4, 8); // 指定fill范围 [1,4) 
+    System.out.println("选择填充下标1-3: " + Arrays.toString(empty));
+
+    int[] empty_enlarge = Arrays.copyOf(empty, 10); // 使用.copyOf复制数组值, 并指定'新大小' 10,
+    System.out.println(".copyOf()了empty[]的内容, 指定新数组empty_enlarge大小为10: "+Arrays.toString(empty_enlarge)); // 可以看到后面多了5个0
+
+
 
   }
 
