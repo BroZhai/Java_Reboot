@@ -31,4 +31,5 @@
 了解了JvAv中的Localdate+time, 整理了对应的笔记
 了解了datetime, DateTimeFormatter大部分常用的静态和实例方法, 准备进行实验
 完成了对Java时间和日期类的摸索
+了解了一下Java的正则表达式, 回忆了编译原理讲过的内容, 大体知道了Pattern类 和 Matcher类, time2go~
 2025.06.26
