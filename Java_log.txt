@@ -30,4 +30,5 @@
 完成了昨天的小尾巴, 对笔记进行了部分的补充
 了解了JvAv中的Localdate+time, 整理了对应的笔记
 了解了datetime, DateTimeFormatter大部分常用的静态和实例方法, 准备进行实验
+完成了对Java时间和日期类的摸索
 2025.06.26
