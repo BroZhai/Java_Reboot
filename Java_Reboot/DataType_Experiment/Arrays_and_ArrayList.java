@@ -108,13 +108,22 @@ public class Arrays_and_ArrayList{
     System.out.println("alist现在是否包含0? " + alist.contains(0)); // false
     System.out.println("alist中'6'出现的最后一次的下标: " + alist.lastIndexOf(6)); // 5
     alist.removeAll(blist); // alist移除blist中'包含'的元素, 用法和上面的addAll()一致
-    System.out.println(alist.toString()); // 6不见了
+    System.out.println("移除了alist中与blist重叠的元素: "+alist.toString()); // 6不见了
     alist.clear(); // 清空了
     System.out.println("使用.clear()清空了alist的内容: "+ alist.toString());
     System.out.println("现在alist isEmpty吗? " + alist.isEmpty()); // true
-    System.out.println(blist.subList(0,2).toString());
+    System.out.println("取出blist下标0-1的元素查看: "+blist.subList(0,2).toString());
     System.out.println("\n");
     
+    // 动态ArrayList转成静态Arrays类, .toArray(指定'大对象'数组[数组大小]))
+    Integer[] b_arr = blist.toArray(new Integer[blist.size()]); 
+    // 此时 b_arr 就是静态数组了, 我们要用Arrays的'静态方法'对其进行操作
+    System.out.println("试一下blist转成Arrays: " + Arrays.toString(b_arr) + " 当前的blist类型为: " + b_arr.getClass().getName()); // 成功转成Arrays ([Integer 即是 Integer[] )
+    ArrayList<Integer> blist_copy = (ArrayList<Integer>)blist.clone(); // 黄色叹号告知 编译器'这么直接转OK吗'? (OK的)
+    blist_copy.add(10);
+    System.out.println("现在通过.clone()方法创建了一个blist_copy, 里面多加了一个元素'10'");
+    System.out.println("blist的内容: " + blist.toString());
+    System.out.println("blist_copy的内容: " + blist_copy.toString());
 
   }
 
