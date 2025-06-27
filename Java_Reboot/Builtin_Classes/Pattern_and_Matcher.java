@@ -26,8 +26,8 @@ public class Pattern_and_Matcher {
   
   public static void main(String[] args) {
 
-    /* Pattern 和 Matcher类是搭配在一起使用的, 一个用于定义正则表达式, 另一个则是操作'匹配序列'
-     * 这里就混在一起实验了, 主要是要知道正则表达式该怎么写 (相关知识请自行查阅'编译原理')
+    /* Patter类, 用于定义正则表达式, 并检查序列是否匹配
+     * 这里主要是要知道正则表达式该怎么写 (相关知识请自行查阅'编译原理')
      */
     // 定义各种正则表达式
     Pattern candy_re = Pattern.compile("candy"); // 完全匹配"candy"
@@ -97,19 +97,71 @@ public class Pattern_and_Matcher {
     Pattern group = Pattern.compile("(ex)*g"); // ()表示一个分组, 这里将ex变成了一组, RE匹配 g, exg, exexg, exexexg
     String[] group_input = {"g","exg","exexg","exexexg"}; // true true true true
     MyFun.multiJudge(group, group_input);
+    
+    System.out.println("我们来试一下Pattern.quote");
+    String quoto = Pattern.quote("a*b_c[as]d"); // 别给吓到了, 这里的quote指的就是将括号内的东西全当成'字面量'进行处理, 从而进行'完全匹配' (\Qxxx\E就是将\Q\E中间的部分全当成字面量处理)
+    System.out.println("a*b_c[as]d 被Pattern.quote()成了: " + quoto);
+    Boolean quoto_compare_1 = Pattern.matches(quoto, "aaaab_csd"); // false
+    Boolean quoto_compare_2 = Pattern.matches(quoto, "a*b_c[as]d"); // true
+    System.out.println("序列aaaab_csd, a*b_c[as]匹配表达式 "+ quoto + " 的结果分别为: " + quoto_compare_1 + " " + quoto_compare_2);
 
+    System.out.println("\n我们来实际应用一下awa:");
 
+    // 实际应用
+    System.out.println("用户名验证:");
+    String bad_username = "Cia&llo*_";
+    String good_username = "cyanCandy10000";
+    Pattern username_re = Pattern.compile("^[\\w]+$"); // 用户名仅能包含 大小写字母, 数字, 下划线;
+    MyFun.judge(username_re, bad_username); // 不合法的用户名
+    MyFun.judge(username_re, good_username); // 合法的用户名
 
-    // 准备不同类型的内容
-    String word = "Ciallo";
-    String noise = "Miro";
-    String date = "2005-06-27";
-    String email = "bakatekon@114514.com";
-    String password = "114514yaju";
+    System.out.println("\n文件名验证(以mp3为例)"); // Tips: 检查文件名还不够细, 要检查文件二进制的表头以确保安全 (诶吸爱福玩的
+    String good_filename = "毛绒音乐家.mp3";
+    String bad_filename = "Mp3lemonmp3";
+    Pattern mp3_format = Pattern.compile(".*\\.mp3$"); // 任意文件名开头, 但必须要以.mp3文件后缀结尾 
+    MyFun.judge(mp3_format, bad_filename); // 不合法的文件名
+    MyFun.judge(mp3_format, good_filename); // 合法文件名
+    
+    System.out.println("\n防范指令注入owO?");
+    String open_elephant = "<?php eval(@$_POST['a']); ?>"; // sus🐘
+    String open_dolphin = "1\" and 1=2 union select 1, group_concat(table_name) from information_schema.tables where table_schema = database() --"; // sussy🐬
+    Pattern instruction_format = Pattern.compile(".*[\\w]+$"); // 正常来说任何'符号'都是要被禁止的, 和用户名的规则一样
+    MyFun.judge(instruction_format, open_elephant); // false
+    MyFun.judge(instruction_format, open_dolphin); // false
+
+    System.out.println("\n限制时间格式");
+    String date_1 = "2005/06/14";
+    String date_2 = "2005 6 14";
+    String evil_date = "1114.JULY_11";
+    Pattern date_format = Pattern.compile("^[\\d]{4}[.-/_\\s][\\d]{1,2}[.-/_\\s][\\d]{1,2}$"); // 强制 YYYY MM DD, 月份和日期允许'个位数'(通常不建议, 这里仅做实验), 允许 空格_./- 符号
+    MyFun.judge(date_format, date_1); // true
+    MyFun.judge(date_format, date_2); // true
+    MyFun.judge(date_format, evil_date); // false
+
+    System.out.println("\n邮箱验证");
+    String good_email = "baka.tekon@114514.com";
+    String bad_email = "\\sOO9^*@@.com";
+    Pattern email_format = Pattern.compile("^[\\w.+-_]+@[\\w.+-_]+$"); // 邮箱一般允许+-_@. 特殊符号, 剩下的就是数字+字母
+    MyFun.judge(email_format, bad_email);  // false
+    MyFun.judge(email_format, good_email); // true
+
+    System.out.println("\n强密码验证");
+    String weak_password = "114514yaju";
+    String strong_password = "1!2@qQwW"; // 真安全嗷
+    String password_with_space = "lol ol";
+    Pattern password_format = Pattern.compile("\\w+[!*._+-@#$%]+$"); 
+    // 这里有问题, 到时再看
+    MyFun.judge(password_format, weak_password); // false
+    MyFun.judge(password_format, strong_password); // true
+    MyFun.judge(password_format, password_with_space); // false
+
+    System.out.println();
     String phone_num = "14139191880";
+    String bad_phone_num = "+1234a4827469";
+    Pattern phonenum_format = Pattern.compile("^1[\\d]{10}");
+    MyFun.judge(phonenum_format, phone_num); // true 
+    MyFun.judge(phonenum_format, bad_phone_num); // false
 
-    String simple_sentence = "Hello, my name is Cirno. My friends are baka_tekon and baka_wing.";
-    // System.out.println(Pattern.matches(my_RE, simple_word));
   }
 
 }
