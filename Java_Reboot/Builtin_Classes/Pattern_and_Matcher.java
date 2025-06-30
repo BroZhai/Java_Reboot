@@ -1,7 +1,9 @@
 package Java_Reboot.Builtin_Classes;
 import java.util.regex.Pattern; // 导入Pattern类
+import java.util.Arrays;
 import java.util.regex.Matcher; // 导入Matcher类
 
+// 注: Matcher类实验区入口在193行左右
 public class Pattern_and_Matcher {
 
   // 封装一些方法, 不然下面得写疯了
@@ -111,6 +113,12 @@ public class Pattern_and_Matcher {
     Pattern milktea_or = Pattern.compile(".*(?=珍珠|奶茶).*"); // 有'珍珠' or '奶茶' 关键字 就匹配
     String[] milktea_input = {"'我要喝奶茶'", "'我不想喝珍珠奶茶饮料'", "'我想吃奶茶冰淇淋'", "'我想喝水'","'我喝不到, 我要掉小珍珠了qwq'"};
     MyFun.multiJudge(milktea_and, milktea_input); // false true false false false
+    System.out.println("String 的split()小实验, ()里面传RE");
+    String test_split = "我要喝珍珠加奶茶再来点龟苓膏"; 
+    String[] split_result = test_split.split("奶茶|珍珠"); // 这个.split()方法是String的, 里面可以填RE正则表达式, 之前忘记做实验了, 搞了半天以为是Pattern类的
+    System.out.println(Arrays.toString(split_result)+"\n");  // 以 "珍珠", "奶茶" 关键字为分割线, 对原String进行分割并返回一个数组String[], 利用Arrays.的静态方法输出内容
+    
+
     System.out.println("milktea_or:");
     MyFun.multiJudge(milktea_or, milktea_input); // true true true false true
 
@@ -180,6 +188,9 @@ public class Pattern_and_Matcher {
     MyFun.judge(phonenum_format, phone_num); // true 
     MyFun.judge(phonenum_format, bad_phone_num); // false
 
+
+    /* Matcher类实验区 */
+    // 要创建一个Matcher对象, 首先我们要有个Pattern对象, 用Pattern对象的.matcher()实例方法来创建一个Matcher对象
   }
 
 }
