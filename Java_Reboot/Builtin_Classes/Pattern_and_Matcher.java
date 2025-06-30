@@ -1,7 +1,7 @@
 package Java_Reboot.Builtin_Classes;
 import java.util.regex.Pattern; // 导入Pattern类
-import java.util.Arrays;
 import java.util.regex.Matcher; // 导入Matcher类
+import java.util.Arrays;
 
 // 注: Matcher类实验区入口在193行左右
 public class Pattern_and_Matcher {
@@ -191,6 +191,7 @@ public class Pattern_and_Matcher {
 
     /* Matcher类实验区 */
     // 要创建一个Matcher对象, 首先我们要有个Pattern的RE对象, 用Pattern对象的.matcher()实例方法来创建一个Matcher对象
+    // 简单来说, 我们可以将Matcher理解成一个指针, 指向自身'内容序列中'相匹配的地方, 针对这些地方进行具体的操作
     System.out.println("\n-----Matcher类实验区-----");
     Pattern str_re = Pattern.compile("\\bsus\\b"); // \bXXX\b 匹配单独的 "sus" 字样
     String sus_content = "Who ever said sus will be sus";
@@ -208,9 +209,22 @@ public class Pattern_and_Matcher {
       System.out.println("匹配到: "+ sus_matcher.group() + ", 当前起始坐标" +sus_matcher.start() + ", 结束坐标: " + sus_matcher.end());
       // 指针14右边, 17左边 (坐标从1开始计数, 看指针右边)
       // 指针26右边, 29左边 
+      // Tips: .find()方法会持续的返回布尔值, 动态的变动'指针指向', 直到指到最后一个'匹配序列'上, 后面为false
     }
-    // System.out.println("sus_matcher第一个匹配位置: " + sus_matcher.end());
-    // System.out.println("第二个匹配位置: " + sus_matcher.group(1));
+    sus_matcher.reset(); // 用.reset() 重置指针位置, 同时也会清除'手动限制的范围  ' (直接作用在对象上)
+    System.out.println("指针是否成功重置? "+ sus_matcher.find() + ", 重置指针后的首次匹配序列坐标为: " +sus_matcher.start()); // 重置指针后的首次匹配
+    System.out.println(sus_matcher.replaceAll("baka")); // .replaceAll() 将所有'匹配的序列' 自定义替换内容, so who said baka?
+    
+    sus_matcher.reset();
+    sus_matcher.region(0, 20); // 限定匹配区为 0-20, 超出的部分就不管了
+    System.out.println("当前限定的起始坐标: " + sus_matcher.regionStart() + ", 终止坐标: " + sus_matcher.regionEnd()); // 0 20
+    while(sus_matcher.find()){
+      System.out.println("匹配到: "+ sus_matcher.group() + ", 当前起始坐标" +sus_matcher.start() + ", 结束坐标: " + sus_matcher.end());
+      // 因为限制的范围, 这里只会匹配一次, 14-17; 超过20的 26-29就'不在管辖范围内' XD
+    }
+
+
+    // System.out.println(sus_content);
   }
 
 }
