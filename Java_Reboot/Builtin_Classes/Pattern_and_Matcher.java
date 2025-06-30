@@ -105,6 +105,17 @@ public class Pattern_and_Matcher {
     Boolean quoto_compare_2 = Pattern.matches(quoto, "a*b_c[as]d"); // true
     System.out.println("序列aaaab_csd, a*b_c[as]匹配表达式 "+ quoto + " 的结果分别为: " + quoto_compare_1 + " " + quoto_compare_2);
 
+    System.out.println("\n再来看看正向先行断言");
+    // 突然发现遗漏了一个比较劲爆的知识点: 正向先行断言(?=xxx), 简单来说就是往整个序列'看一眼', 确定有'某样东西', 但顺序不重要
+    Pattern is_contain = Pattern.compile("^(?=.*[A-Z])(?=.*\\d)(?=.*[a-z]).+$"); // 指定字符串中要有 大小写+数字, 但是顺序不重要 (注意结尾的 ".+" 表示匹配前面'整一段条件' 至少都有)
+    String[] is_contain_input = {"abcABC123", "abc123ABC", "aA1bB2cC3", "abcdAAAA"}; // true true true false
+    MyFun.multiJudge(is_contain, is_contain_input);
+
+    Pattern milktea_contain = Pattern.compile(".*(?=奶茶).*$");
+    String[] milktea_input = {"我要喝奶茶", "我不想喝珍珠奶茶饮料", "我想吃奶茶味冰淇淋", "我想喝水"};
+    
+
+
     System.out.println("\n我们来实际应用一下awa:");
 
     // 实际应用
@@ -149,7 +160,9 @@ public class Pattern_and_Matcher {
     String weak_password = "114514yaju";
     String strong_password = "1!2@qQwW"; // 真安全嗷
     String password_with_space = "lol ol";
-    Pattern password_format = Pattern.compile("\\w+[!*._+-@#$%]+$"); 
+    // Pattern password_format = Pattern.compile("\\w+[!*._+-@#$%]+$");  // 此处要应用"正向先行断言"
+    Pattern password_format = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\\W_).+$"); // 密码字符顺序不重要, 但是该有的 小写 大写 数字 特殊符号 都要有, 且长度要>=8
+
     // 这里有问题, 到时再看
     MyFun.judge(password_format, weak_password); // false
     MyFun.judge(password_format, strong_password); // true
