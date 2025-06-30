@@ -190,7 +190,27 @@ public class Pattern_and_Matcher {
 
 
     /* Matcher类实验区 */
-    // 要创建一个Matcher对象, 首先我们要有个Pattern对象, 用Pattern对象的.matcher()实例方法来创建一个Matcher对象
+    // 要创建一个Matcher对象, 首先我们要有个Pattern的RE对象, 用Pattern对象的.matcher()实例方法来创建一个Matcher对象
+    System.out.println("\n-----Matcher类实验区-----");
+    Pattern str_re = Pattern.compile("\\bsus\\b"); // \bXXX\b 匹配单独的 "sus" 字样
+    String sus_content = "Who ever said sus will be sus";
+    Matcher sus_matcher = str_re.matcher(sus_content); //
+    System.out.println("sus_matcher的内容是否匹配其'内置'表达式: " + str_re.pattern()+ " ? "+sus_matcher.matches()); // .matches() 检查自身内容 是否'完全匹配'自身的RE, 返回布尔
+    Pattern test_re = Pattern.compile("a\\d+");
+    String test_a = "a1234DD!";
+    String test_b = "1234aa1234d";
+    Matcher matcher_a = test_re.matcher(test_a); // true
+    Matcher matcher_b = test_re.matcher(test_b); // false
+    System.out.println("test_a: " + matcher_a.lookingAt() + ", test_b: " + matcher_b.lookingAt()); // .lookingAt() 只检查开头'匹配的地方' ('多余'部分无需完全匹配)
+    System.out.println("sus_content的内容: " + sus_content);
+    while (sus_matcher.find()) {
+      // .group() 返回'匹配文本', .start()返回匹配文本在字符串中的'起始下标', .end()则是'终止下标'
+      System.out.println("匹配到: "+ sus_matcher.group() + ", 当前起始坐标" +sus_matcher.start() + ", 结束坐标: " + sus_matcher.end());
+      // 指针14右边, 17左边 (坐标从1开始计数, 看指针右边)
+      // 指针26右边, 29左边 
+    }
+    // System.out.println("sus_matcher第一个匹配位置: " + sus_matcher.end());
+    // System.out.println("第二个匹配位置: " + sus_matcher.group(1));
   }
 
 }
