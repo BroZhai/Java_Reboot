@@ -107,13 +107,16 @@ public class Pattern_and_Matcher {
 
     System.out.println("\n再来看看正向先行断言");
     // 突然发现遗漏了一个比较劲爆的知识点: 正向先行断言(?=xxx), 简单来说就是往整个序列'看一眼', 确定有'某样东西', 但顺序不重要
-    Pattern is_contain = Pattern.compile("^(?=.*[A-Z])(?=.*\\d)(?=.*[a-z]).+$"); // 指定字符串中要有 大小写+数字, 但是顺序不重要 (注意结尾的 ".+" 表示匹配前面'整一段条件' 至少都有)
+    Pattern milktea_and = Pattern.compile(".*(?=.*珍珠)(?=.*奶茶).*$"); // 当涉及到'多条件'并列判断时, 每个断言需要是'独立的', 要求 '珍珠' '奶茶' 两个关键字同时出现才匹配
+    Pattern milktea_or = Pattern.compile(".*(?=珍珠|奶茶).*"); // 有'珍珠' or '奶茶' 关键字 就匹配
+    String[] milktea_input = {"'我要喝奶茶'", "'我不想喝珍珠奶茶饮料'", "'我想吃奶茶冰淇淋'", "'我想喝水'","'我喝不到, 我要掉小珍珠了qwq'"};
+    MyFun.multiJudge(milktea_and, milktea_input); // false true false false false
+    System.out.println("milktea_or:");
+    MyFun.multiJudge(milktea_or, milktea_input); // true true true false true
+
+    Pattern is_contain = Pattern.compile("^(?=.*[A-Z])(?=.*\\d)(?=.*[a-z]).+$"); // 指定字符串中要有 大小写+数字, 但是顺序不重要 (注意结尾的 "+" 表示匹配前面'整一段条件'(?=.*[A-Z])(?=.*\\d)(?=.*[a-z]). 至少一次或以上)
     String[] is_contain_input = {"abcABC123", "abc123ABC", "aA1bB2cC3", "abcdAAAA"}; // true true true false
     MyFun.multiJudge(is_contain, is_contain_input);
-
-    Pattern milktea_contain = Pattern.compile(".*(?=奶茶).*$");
-    String[] milktea_input = {"我要喝奶茶", "我不想喝珍珠奶茶饮料", "我想吃奶茶味冰淇淋", "我想喝水"};
-    
 
 
     System.out.println("\n我们来实际应用一下awa:");
@@ -160,13 +163,15 @@ public class Pattern_and_Matcher {
     String weak_password = "114514yaju";
     String strong_password = "1!2@qQwW"; // 真安全嗷
     String password_with_space = "lol ol";
+    String admin_password = "myadmin1234@PHP";
     // Pattern password_format = Pattern.compile("\\w+[!*._+-@#$%]+$");  // 此处要应用"正向先行断言"
-    Pattern password_format = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\\W_).+$"); // 密码字符顺序不重要, 但是该有的 小写 大写 数字 特殊符号 都要有, 且长度要>=8
+    Pattern password_format = Pattern.compile("^.*(?=.*[a-z])(?=.*[A-Z])(?=.*[\\d])(?=.*[\\W]).{8,}+$"); // 密码字符顺序不重要, 但是该有的 小写 大写 数字 特殊符号 都要有, 且长度要>=8
 
     // 这里有问题, 到时再看
     MyFun.judge(password_format, weak_password); // false
     MyFun.judge(password_format, strong_password); // true
     MyFun.judge(password_format, password_with_space); // false
+    MyFun.judge(password_format, admin_password); // true
 
     System.out.println();
     String phone_num = "14139191880";
