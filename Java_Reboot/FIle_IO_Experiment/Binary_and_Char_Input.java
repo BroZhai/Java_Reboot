@@ -4,8 +4,9 @@ public class Binary_and_Char_Input {
 
   public static void main(String[] args) throws IOException{
     // 字符流输入 (Tips: Java中的控制台在 输入时是'字节流', 但是后续会被 自动封装成'字符流' 进行调用)
+    /*
     char c;
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 从控制台读取输入 ()
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 从控制台读取输入
     System.out.println("按下e键退出");
     do{
       c = (char) br.read();
@@ -18,6 +19,15 @@ public class Binary_and_Char_Input {
      * 第三次是 'println()'的换行 \n (同上)
      * (小实验: 把println()改成print(), 控制台只会输出两次pwp)
      */
+
+     System.out.println(System.getProperty("user.dir")); // 用这行命令查看当前Java的工作路径 Java_Reboot/
+    // 读取'字符'文件 (用到FileReader类, 会抛出IOException异常)
+    FileReader file = new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"); // 从上面查出来的路径开始'拼接'
+    int current_char_value;
+    while((current_char_value = file.read()) != -1){ // FileReader对象.read(), 直接读取单个字符, 返回对应的int值, 读到结尾返回-1
+      System.out.println("当前读取到的字符为: "+ (char) current_char_value);
+    };
+
 
   }
 }
