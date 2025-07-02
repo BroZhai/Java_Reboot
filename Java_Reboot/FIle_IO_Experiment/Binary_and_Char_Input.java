@@ -1,12 +1,13 @@
 package Java_Reboot.FIle_IO_Experiment;
 import java.io.*; // Java对于二进制'数据流'的处理要用 java.io包中的工具
+
 public class Binary_and_Char_Input {
 
   public static void main(String[] args) throws IOException{
 
-    System.out.println(System.getProperty("user.dir")); // 用这行命令查看当前Java的工作路径 Java_Reboot/
-    // 读取'字符'文件 (用到FileReader类, 会抛出IOException异常)
+    System.out.println("System.getProperty()拿到的当前工作路径: " + System.getProperty("user.dir")); // 用这行命令查看当前Java的工作路径 Java_Reboot/
     
+    /* 读取'字符'文件 (用到FileReader类, 会抛出IOException异常) */ 
     FileReader file = new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"); // 从上面查出来的路径开始'拼接'
     char[] file_content = new char[100]; // 小问题, 如果直接创建对应数组, 你并不知道 文件实际有多大 XD
     // System.out.println("下面开始逐个读取'字符'");
@@ -18,41 +19,66 @@ public class Binary_and_Char_Input {
     System.out.print("从文件存储到char[]数组中的数据为: ");
     for(char i : file_content){
       System.out.print(i);
-    } // 注: 在FileReader对象被读到尾部之后, 其指针一直都会指向'-1', 如果需要'再利用'该文件的话, 只能关闭当前的 FileReader 并 重新创建对象 (还不能重名!)
-    file.close(); 
+    } 
+    file.close();  // 注: 在FileReader对象被读到尾部之后, 其指针一直都会指向'-1', 如果需要'再利用'该文件的话, 只能关闭当前的 FileReader 并 重新创建对象 (还不能重名!)
 
-    FileReader my_file = new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"); // 注意这里不要惯性思维, 有时不创建对象直接用 new FileReader都可以的 -w-
-    System.out.println();
+    System.out.println("\n");
+    System.out.println("接下来我们来看一下 字符缓冲区 BufferedReader 怎么用");
+    FileReader my_file = new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"); // 注意这里不要惯性思维, 有时不创建对象直接用 new FileReader也可以的 -w-
     // 我们发现直接读'固定大小'的文件不太现实, 所以我们就需要建立一个'读取缓冲区'
-    BufferedReader buffer_content = new BufferedReader(my_file, 20); // 设置缓冲区大小为10
-    StringBuilder sb = new StringBuilder(20); // 这里我们直接用StringBuilder, 初始大小为20, 内容爆了会'自动扩容', 里面实际存的是char[] 或 byte[]
+    BufferedReader buffer_content = new BufferedReader(my_file, 20); // 设置缓冲区大小为20, 表示每次只读20个byte/char
+    StringBuilder sb = new StringBuilder(40); // StringBuilder随便初始大小都行, 反正会自动扩容
     int current_char_value;
     while( (current_char_value = buffer_content.read()) != -1){ // current_char_value动态读取赋值, 不为-1时持续循环
       sb.append((char) current_char_value); // 将当前读取到的 current_char_value 转成 char 存到上面定好的StringBuilder中
+      // 小贴士: 这里的sb会在读完buffered的内容后, 再通知BufferedReader'读下一段', 从而达成'每次读固定长度'
     }
-    System.out.println(sb.length());
-    buffer_content.close();
+    System.out.println("StringBuilder从BufferedReader中'分段'存到的内容: "+sb.toString());
+    System.out.println("当前StringBuilder的长度: " + sb.length());
+    buffer_content.close(); // 在完成'流'操作后, 一定要'关闭流', 防止内存泄露
+    my_file.close(); // 同上
+
+    System.out.println();
+
+    // 试一下readLine()
+    BufferedReader line_reader = new BufferedReader(new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"));
+    // StringBuilder lines = new StringBuilder();
+    System.out.println("BufferedReader的readLine()实例方法, 第一次read: "+line_reader.readLine());
+    System.out.println("BufferedReader的readLine()实例方法, 第二次read: "+line_reader.readLine());
+    System.out.println("BufferedReader的readLine()实例方法, 第三次read: "+line_reader.readLine());
+    System.out.println("BufferedReader的readLine()实例方法, 第四次read: "+line_reader.readLine() + ", 可以看到到头了会返回null");
+    line_reader.close();
 
 
+    // 注意: readLine()返回的是String数据, 也就是说 文件中里面的 换行\n 和 回车\r 在返回时会被忽略
+    System.out.println("\n我们再来用while循环过一遍");
+    BufferedReader loop_reader = new BufferedReader(new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"));
+    StringBuilder loop_output = new StringBuilder(20);
+    String current_line;
+    while ((current_line = loop_reader.readLine()) != null) {
+      loop_output.append(current_line);
+    }
+    System.out.println("loop_output中的数据为: " + loop_output.toString());
+    loop_reader.close();
 
 
-    // 字符流输入 (Tips: Java中的控制台在 输入时是'字节流', 但是后续会被 自动封装成'字符流' 进行调用)
-    /*
-    
+    /*字符流输入 (Tips: Java中的控制台在 输入时是'字节流'byte stream, 但是后续会被 自动封装成'字符流'char stream 进行调用) */ 
     char c;
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 从控制台读取输入
-    System.out.println("按下e键退出");
+    System.out.print("\n按下e键+回车继续: ");
     do{
       c = (char) br.read();
-      System.out.print("你当前按下了: " + c);
+      System.out.println("你当前按下了: " + c);
     }while(c != 'e');
-    // 在输入一个 非'e'的字符时, 控制台会进行3次打印
+    // 在输入一个 非'e'的字符时, 控制台会进行3次打印 (至少
     /*
      * 第一次打印的是 '输入的字符'
      * 第二次是 '输入完毕的回车' \r,  (控制台不显示, 但是会换行)
      * 第三次是 'println()'的换行 \n (同上)
      * (小实验: 把println()改成print(), 控制台只会输出两次pwp)
      */
+
+
 
   }
 }
