@@ -58,14 +58,14 @@ public class Binary_and_Char_Input {
     while ((current_line = loop_reader.readLine()) != null) {
       loop_output.append(current_line);
     }
-    System.out.println("loop_output中的数据为: " + loop_output.toString());
+    System.out.println("loop_output中的数据为:  " + loop_output.toString());
     loop_reader.close();
 
 
     /*字符流输入 (Tips: Java中的控制台在 输入时是'字节流'byte stream, 但是后续会被 自动封装成'字符流'char stream 进行调用) */ 
     char c;
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 从控制台读取输入
-    System.out.print("\n按下e键+回车继续: ");
+    System.out.print("\n请按下 e键 + 回车 继续: ");
     do{
       c = (char) br.read();
       System.out.println("你当前按下了: " + c);
@@ -78,7 +78,17 @@ public class Binary_and_Char_Input {
      * (小实验: 把println()改成print(), 控制台只会输出两次pwp)
      */
 
+     /* 接下来我们来看一下字符流的'文件输出' .write() */
+    FileWriter overwrite_writer = new FileWriter("Java_Reboot/File_IO_Experiment/writer_output.txt"); // 当文件不存在时, 会自动创建
+    overwrite_writer.write("你好, 这里是来自Java中的FileWriter的字符输出\n"); // 这里的\n会被识别成'换行'
+    overwrite_writer.write("默认我会覆盖文件的'原内容'哦qwq\\n"); // 这里输出的则会是 \\n
+    overwrite_writer.flush(); // 一定要有这个flush(), 表示刷新并立即写入数据 
+    overwrite_writer.close(); // 关闭操作流
 
-
+    // 追加写入, 在创建对象时 多传一个布尔参数
+    FileWriter append_writer = new FileWriter("Java_Reboot/File_IO_Experiment/writer_output.txt",true); // 这里多加了一个布尔的参数, 表示'追加内容'而非覆写
+    append_writer.write("\n\n诶嘿, 看见没, 我是新追加的内容, 不会覆盖该文件, 因为我多传了一个参awa");
+    append_writer.flush();
+    append_writer.close();
   }
 }
