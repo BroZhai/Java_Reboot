@@ -1,6 +1,6 @@
-package Java_Reboot.Builtin_Classes;
+package Java_Reboot.FIle_IO_Experiment;
 import java.io.*; // Java对于二进制'数据流'的处理要用 java.io包中的工具
-public class Binary_IO {
+public class Binary_and_Char_Input {
 
   public static void main(String[] args) throws IOException{
     // 字符流输入 (Tips: Java中的控制台在 输入时是'字节流', 但是后续会被 自动封装成'字符流' 进行调用)
