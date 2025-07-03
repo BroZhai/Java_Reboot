@@ -1,9 +1,10 @@
 package Java_Reboot.FIle_IO_Experiment;
 import java.io.*; // Java对于二进制'数据流'的处理要用 java.io包中的工具
 
-import java.util.ArrayList;
 import java.util.Arrays; // 用于静态数组的展示
 import java.text.DecimalFormat; // 用于'格式化'小数展示
+import java.time.Duration; // 操作计时相关 (计算时间戳差值)
+import java.time.Instant; // 操作计时相关 (获取时间戳)
 
 public class Binary_and_Char_Input {
 
@@ -151,16 +152,18 @@ public class Binary_and_Char_Input {
     
     System.out.println("\n接下来实践一下 字符文件的缓冲区");
     // 接下来我们来试一下使用 硬盘缓冲区BufferedInputStream 和 ArrayList<Byte> 配合 while循环来读取内容
-    BufferedInputStream unstructured_input_buffer = new BufferedInputStream(new FileInputStream(test_path+"bin_music.mp3"), 131072); // 自定义的'硬盘缓冲大小', 每次从硬盘读128KB
+    int buffer_size = 131072; // 统一定义硬盘 & 内存的 '缓存区大小' (小实验: 不同的 内存buffer_size将会影响'读取时间')
+    BufferedInputStream unstructured_input_buffer = new BufferedInputStream(new FileInputStream(test_path+"bin_music.mp3"), buffer_size); // 自定义的'硬盘缓冲大小', 每次从硬盘读128KB
     System.out.println("从硬盘读取到bin_music.mp3的大小为: "+unstructured_input_buffer.available() + " Bytes"); // 字节流数据特有的.available()方法, 查看'已读取的文件大小'
     int file_size = unstructured_input_buffer.available(); // 读取的文件大小, 用于建立对应的存储数组用
     byte[] file_storage = new byte[file_size]; // 读取的文件大小
-    byte[] ram_buffer = new byte[131072]; // 内存缓冲区域, 每次读 131072 Byte (128KB)
+    byte[] ram_buffer = new byte[buffer_size]; // 内存缓冲区域, 每次读 131072 Byte (128KB)
     int read_bytes;
     read_counter = 1;
     double progress; // 实现一个'读取进度'百分比%
     DecimalFormat df = new DecimalFormat("#.00"); // 保留两位小数格式
     int total_readed = 0;
+    Instant start = Instant.now(); // 记录开始时间的'时间戳'
     while((read_bytes = unstructured_input_buffer.read(ram_buffer)) != -1 ){ // BufferedInputStream.read()读到文件尾时也会返回 "-1"
       total_readed += read_bytes;
       progress = ((double) total_readed / file_size)*100;
@@ -171,21 +174,28 @@ public class Binary_and_Char_Input {
       // 上面是错误的是写法, 逐字读I/O开销一定是大的
 
       // System.arraycopy(原数组, 原数组起始位置, 目标数组, 目标数组起始位置, 复制长度), 这是Java中用于高效复制'静态数组'的一个方法
-      System.arraycopy(ram_buffer, 0, file_storage, (read_counter-1)*131072, read_bytes); // Tips: 这个前后读取的'大小标准'一定要一致!!
+      System.arraycopy(ram_buffer, 0, file_storage, (read_counter-1)*buffer_size, read_bytes); // Tips: 这个前后读取的'大小标准'一定要一致, 这里的'读取偏移'就用上了, 不一致将导致读到的数据'缺斤少两'XD (buffer_size=131072)
       read_counter++;
     }
-    System.out.println("数据在经过 " + (read_counter-1) +" 次内存读取后被完全存到了file_storage[]中");
+    Instant end = Instant.now();
+    Duration operation_time = Duration.between(start, end);
+    System.out.println("数据在经过 " + (read_counter-1) +" 次内存读取后被完全存到了file_storage[]中, 本次读取操作耗时: " + operation_time.toMillis() + "毫秒");
     unstructured_input_buffer.close(); // 完成读入操作
 
     // 现在拿到储存好的数据file_storage[]了, 再用BufferedOutputStream进行Copy输出
-    BufferedOutputStream unstructured_output_buffer = new BufferedOutputStream(new FileOutputStream(copied_path+"double_music.mp3"), 8192); // 自定义输出缓存为8192Byte 
+    int output_buffer = 8192;
+    BufferedOutputStream unstructured_output_buffer = new BufferedOutputStream(new FileOutputStream(copied_path+"double_music.mp3"), output_buffer); // 自定义输出缓存为8192Byte (这里的输出'硬盘缓存'相对来说没那么重要, 记着这玩意主要影响'内存缓冲区')
+    Instant before = Instant.now(); // 尝试记录了操作耗时, 查看不同'缓冲区'大小对写出操作的影响, 结果发现没啥影响(?
     unstructured_output_buffer.write(file_storage);
     unstructured_output_buffer.write(file_storage);
+
     // 直接往文件中连续写入两段'音频数据' (music x 2, 发现输出的文件在5:14处成功衔接)
-
-
+    
     unstructured_output_buffer.flush();
     unstructured_output_buffer.close();
+    Instant after = Instant.now();
+    Duration lastd_for = Duration.between(before, after);
+    System.out.println("本次写出操作耗时: " + lastd_for.toMillis() + "毫秒");
     
 
   }
