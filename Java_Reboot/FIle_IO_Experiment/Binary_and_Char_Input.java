@@ -1,5 +1,6 @@
 package Java_Reboot.FIle_IO_Experiment;
 import java.io.*; // Java对于二进制'数据流'的处理要用 java.io包中的工具
+import java.util.Arrays;
 
 public class Binary_and_Char_Input {
 
@@ -90,5 +91,19 @@ public class Binary_and_Char_Input {
     append_writer.write("\n\n诶嘿, 看见没, 我是新追加的内容, 不会覆盖该文件, 因为我多传了一个参awa");
     append_writer.flush();
     append_writer.close();
+
+    // 当然, 读文件的时候有缓冲的BufferedReader, 那么写文件时也有BufferedWriter啦
+    // 其使用过程和BufferedReader类似: BufferedWriter(输入流)
+    BufferedWriter writer_with_buffer = new BufferedWriter(new FileWriter("Java_Reboot/File_IO_Experiment/bufferedWritter_output.txt")); // 这里的输入流传的是和上面一样的FileWriter, true追加写入
+    writer_with_buffer.write("虽然直接用FileWriter更简单直接\n");
+    writer_with_buffer.write("但是为了安全和高效读写, 我们一般还是用BufferedReader和Writer吧");
+    writer_with_buffer.write("哦对了, BufferedWriter有个.newLine()直接换行方法来着?");
+    writer_with_buffer.newLine();
+    writer_with_buffer.write("诶嘿, 还真有用");
+    char[] test_char_arr = {'\u6211','\u662f','\u742a','\u9732','\u8Bfa'}; // 我 是 琪 露 诺
+    writer_with_buffer.write("我们再来尝试直接写入一个 字符数组[]: " + Arrays.toString(test_char_arr));
+    writer_with_buffer.flush();
+    writer_with_buffer.close();
+    
   }
 }
