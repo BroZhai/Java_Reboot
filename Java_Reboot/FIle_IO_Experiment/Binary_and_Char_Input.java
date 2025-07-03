@@ -1,7 +1,9 @@
 package Java_Reboot.FIle_IO_Experiment;
 import java.io.*; // Java对于二进制'数据流'的处理要用 java.io包中的工具
+
 import java.util.ArrayList;
 import java.util.Arrays; // 用于静态数组的展示
+import java.text.DecimalFormat; // 用于'格式化'小数展示
 
 public class Binary_and_Char_Input {
 
@@ -147,26 +149,40 @@ public class Binary_and_Char_Input {
     output_picture.close();
     System.out.println("尝试复制了 字节文件bin_picture.jpg 至 Copied_Files文件夹下, 能跑到这说明应该成功了"); // mission successful (Jolly并感
     
-    System.out.println("\n接下来实践一下 字符文件的缓冲区 和 动态接收空间");
-    // 接下来我们来试一下使用 缓冲区BufferedInputStream 和 ArrayList<Byte> 配合 while循环来读取内容
-    BufferedInputStream unstructured_input_buffer = new BufferedInputStream(new FileInputStream(test_path+"bin_music.mp3")); // 可追加自定义 缓存大小, 默认8KB
-    System.out.println("读取到bin_music.mp3的大小为: "+unstructured_input_buffer.available() + " Bytes");
-    ArrayList<Byte> dynamic_buffer = new ArrayList<>();
-    int current_byte_int;
-    while((current_byte_int = unstructured_input_buffer.read()) != -1 ){ // BufferedInputStream.read()读到文件尾时也会返回 "-1"
-      dynamic_buffer.add((byte) current_byte_int);
+    System.out.println("\n接下来实践一下 字符文件的缓冲区");
+    // 接下来我们来试一下使用 硬盘缓冲区BufferedInputStream 和 ArrayList<Byte> 配合 while循环来读取内容
+    BufferedInputStream unstructured_input_buffer = new BufferedInputStream(new FileInputStream(test_path+"bin_music.mp3"), 131072); // 自定义的'硬盘缓冲大小', 每次从硬盘读128KB
+    System.out.println("从硬盘读取到bin_music.mp3的大小为: "+unstructured_input_buffer.available() + " Bytes"); // 字节流数据特有的.available()方法, 查看'已读取的文件大小'
+    int file_size = unstructured_input_buffer.available(); // 读取的文件大小, 用于建立对应的存储数组用
+    byte[] file_storage = new byte[file_size]; // 读取的文件大小
+    byte[] ram_buffer = new byte[131072]; // 内存缓冲区域, 每次读 131072 Byte (128KB)
+    int read_bytes;
+    read_counter = 1;
+    double progress; // 实现一个'读取进度'百分比%
+    DecimalFormat df = new DecimalFormat("#.00"); // 保留两位小数格式
+    int total_readed = 0;
+    while((read_bytes = unstructured_input_buffer.read(ram_buffer)) != -1 ){ // BufferedInputStream.read()读到文件尾时也会返回 "-1"
+      total_readed += read_bytes;
+      progress = ((double) total_readed / file_size)*100;
+      // progress = (double) progress * 100;
+
+      System.out.println("当前从'内存缓冲区'中读了: " + read_bytes + " Bytes, 这是第 " + read_counter + " 次内存读取, 读取进度: " + df.format(progress) + "%");
+      // dynamic_buffer.add((byte) current_byte_int);
+      // 上面是错误的是写法, 逐字读I/O开销一定是大的
+
+      // System.arraycopy(原数组, 原数组起始位置, 目标数组, 目标数组起始位置, 复制长度), 这是Java中用于高效复制'静态数组'的一个方法
+      System.arraycopy(ram_buffer, 0, file_storage, (read_counter-1)*131072, read_bytes); // Tips: 这个前后读取的'大小标准'一定要一致!!
+      read_counter++;
     }
-    System.out.println("动态Byte数组当前存储的大小为: " + dynamic_buffer.size()); // 发现和读到的文件大小是完全一样的, 说明文件已经完全写入动态数组中了
+    System.out.println("数据在经过 " + (read_counter-1) +" 次内存读取后被完全存到了file_storage[]中");
     unstructured_input_buffer.close(); // 完成读入操作
-    // 现在拿到储存好的数据了, 再用BufferedOutputStream进行Copy输出
-    BufferedOutputStream unstructured_output_buffer = new BufferedOutputStream(new FileOutputStream(copied_path+"double_music.mp3",true));
-    // Byte[] arraylist_data = (Byte[]) dynamic_buffer.toArray();
-    for(byte i : dynamic_buffer){
-      unstructured_output_buffer.write(i);
-    }
-    for(byte i: dynamic_buffer){
-      unstructured_output_buffer.write(i);
-    }
+
+    // 现在拿到储存好的数据file_storage[]了, 再用BufferedOutputStream进行Copy输出
+    BufferedOutputStream unstructured_output_buffer = new BufferedOutputStream(new FileOutputStream(copied_path+"double_music.mp3"), 8192); // 自定义输出缓存为8192Byte 
+    unstructured_output_buffer.write(file_storage);
+    unstructured_output_buffer.write(file_storage);
+    // 直接往文件中连续写入两段'音频数据' (music x 2, 发现输出的文件在5:14处成功衔接)
+
 
     unstructured_output_buffer.flush();
     unstructured_output_buffer.close();
