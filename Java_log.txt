@@ -55,5 +55,6 @@
 了解了和简单实践了用FileWriter来输出文件, 明天继续来看看BufferWriter, 下班!
 2025.07.02
 
-完成了对BUfferedWriter的实践, 用法和BUfferedReader类似, 整理了对应的笔记
+完成了对BufferedWriter的实践, 用法和BufferedReader类似, 整理了对应的笔记
+实现了对字节流Byte文件的简单读入和写出
 2025.07.03

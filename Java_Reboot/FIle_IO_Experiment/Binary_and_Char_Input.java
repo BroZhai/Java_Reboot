@@ -1,6 +1,7 @@
 package Java_Reboot.FIle_IO_Experiment;
 import java.io.*; // Java对于二进制'数据流'的处理要用 java.io包中的工具
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Arrays; // 用于静态数组的展示
 
 public class Binary_and_Char_Input {
 
@@ -8,7 +9,7 @@ public class Binary_and_Char_Input {
 
     System.out.println("System.getProperty()拿到的当前工作路径: " + System.getProperty("user.dir")); // 用这行命令查看当前Java的工作路径 Java_Reboot/
     
-    /* 读取'字符'文件 (用到FileReader类, 会抛出IOException异常) */ 
+    /* 读取'字符'文件 Structured Data (用到FileReader类, 会抛出IOException异常) */ 
     FileReader file = new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"); // 从上面查出来的路径开始'拼接'
     char[] file_content = new char[100]; // 小问题, 如果直接创建对应数组, 你并不知道 文件实际有多大 XD
     // System.out.println("下面开始逐个读取'字符'");
@@ -63,7 +64,7 @@ public class Binary_and_Char_Input {
     loop_reader.close();
 
 
-    /*字符流输入 (Tips: Java中的控制台在 输入时是'字节流'byte stream, 但是后续会被 自动封装成'字符流'char stream 进行调用) */ 
+    // 字符流输入 (Tips: Java中的控制台在 输入时是'字节流'byte stream, 但是后续会被 自动封装成'字符流'char stream 进行调用) 
     char c;
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 从控制台读取输入
     System.out.print("\n请按下 e键 + 回车 继续: ");
@@ -80,30 +81,65 @@ public class Binary_and_Char_Input {
      */
 
      /* 接下来我们来看一下字符流的'文件输出' .write() */
+    System.out.println("欢迎来到'字符'写入区");
     FileWriter overwrite_writer = new FileWriter("Java_Reboot/File_IO_Experiment/writer_output.txt"); // 当文件不存在时, 会自动创建
     overwrite_writer.write("你好, 这里是来自Java中的FileWriter的字符输出\n"); // 这里的\n会被识别成'换行'
     overwrite_writer.write("默认我会覆盖文件的'原内容'哦qwq\\n"); // 这里输出的则会是 \\n
     overwrite_writer.flush(); // 一定要有这个flush(), 表示刷新并立即写入数据 
     overwrite_writer.close(); // 关闭操作流
+    System.out.println("程序生成了一个writer_output.txt文件并往其中覆写了内容");
 
     // 追加写入, 在创建对象时 多传一个布尔参数
     FileWriter append_writer = new FileWriter("Java_Reboot/File_IO_Experiment/writer_output.txt",true); // 这里多加了一个布尔的参数, 表示'追加内容'而非覆写
     append_writer.write("\n\n诶嘿, 看见没, 我是新追加的内容, 不会覆盖该文件, 因为我多传了一个参awa");
     append_writer.flush();
     append_writer.close();
+    System.out.println("程序又往刚刚生成的writer_output.txt中'追加'了新内容");
 
     // 当然, 读文件的时候有缓冲的BufferedReader, 那么写文件时也有BufferedWriter啦
     // 其使用过程和BufferedReader类似: BufferedWriter(输入流)
     BufferedWriter writer_with_buffer = new BufferedWriter(new FileWriter("Java_Reboot/File_IO_Experiment/bufferedWritter_output.txt")); // 这里的输入流传的是和上面一样的FileWriter, true追加写入
     writer_with_buffer.write("虽然直接用FileWriter更简单直接\n");
-    writer_with_buffer.write("但是为了安全和高效读写, 我们一般还是用BufferedReader和Writer吧");
-    writer_with_buffer.write("哦对了, BufferedWriter有个.newLine()直接换行方法来着?");
+    writer_with_buffer.write("但是为了安全和高效读写, 我们一般还是用BufferedReader和Writer吧\n");
+    writer_with_buffer.write("哦对了, BufferedWriter有个.newLine()直接换行方法来着?\n");
     writer_with_buffer.newLine();
     writer_with_buffer.write("诶嘿, 还真有用");
     char[] test_char_arr = {'\u6211','\u662f','\u742a','\u9732','\u8Bfa'}; // 我 是 琪 露 诺
     writer_with_buffer.write("我们再来尝试直接写入一个 字符数组[]: " + Arrays.toString(test_char_arr));
     writer_with_buffer.flush();
     writer_with_buffer.close();
+    System.out.println("程序通过BufferedWriter往bufferedWritter.txt中安全的写入了数据");
+
+    // 要想'追加写入'文件, 还是得在FileWriter输入流后边加一个布尔的参数, 然后才能用BufferedWriter.append()方法进行内容追加
+    BufferedWriter writer_append = new BufferedWriter(new FileWriter("Java_Reboot/File_IO_Experiment/bufferedWritter_output.txt",true));
+    writer_append.append("\n我是尝试追加的新内容");
+    writer_append.flush();
+    writer_append.close();
+    System.out.println("程序通过BufferedWriter又往上面的文件中追加了新内容, 注意FileReader流后边要多传个boolean参");
+
+
+    /* 字节Byte流实验区 Unstructred Data */
+    String test_path = "Java_Rebott/File_IO_Experiment/"; // 快捷路径引用, 懒得再打了
+    FileInputStream unstructured_file = new FileInputStream(test_path+"bin_picture.jpg");
+    System.out.println("当前读到的文件大小为: "+ unstructured_file.available() + " Bytes"); // 使用.available()方法获取'文件大小', 查到为8846 Bytes
+    byte[] unstructured_storage = new byte[9000]; // 9000 > 8846, 设定一个byte数组的'存储空间'
+    unstructured_file.read(unstructured_storage); // 将 字节文件 直接读入上面设的'存储空间' (暂未使用缓冲区, 一会儿下面搞)
+    System.out.println("当前unstructured_storage[]数组的大小为: " + unstructured_storage.length + " Bytes"); 
+    unstructured_file.close();
+    System.out.println("尝试读取了 字节文件bin_picture.jpg 并存入了本地的byte[]数组中");
+
+    // 我们假设读到的数据已经被存入到 byte[]中了, 下面进行'文件复制'输出验证
+    String copied_path = "Java_Rebott/File_IO_Experiment/Copied_Files/";
+    FileOutputStream output_picture = new FileOutputStream(copied_path+"copied_pictured.jpg");
+    output_picture.write(unstructured_storage);
+    output_picture.flush();
+    output_picture.close();
+    System.out.println("尝试复制了 字节文件bin_picture.jpg 至 Copied_Files文件夹下, 能跑到这说明应该成功了"); // mission successful (Jolly并感
     
+    // 接下来我们来试一下使用 缓冲区BufferedInputStream 和 ArrayList<Byte> 配合 while循环来读取内容
+    BufferedInputStream unstructured_buffer = new BufferedInputStream(new FileInputStream(test_path+"bin_music.mp3")); // 可追加自定义 缓存大小, 默认8KB
+    unstructured_buffer.available();
+    
+
   }
 }
