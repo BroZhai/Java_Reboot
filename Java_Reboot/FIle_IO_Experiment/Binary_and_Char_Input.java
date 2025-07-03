@@ -119,7 +119,7 @@ public class Binary_and_Char_Input {
 
 
     /* 字节Byte流实验区 Unstructred Data */
-    String test_path = "Java_Rebott/File_IO_Experiment/"; // 快捷路径引用, 懒得再打了
+    String test_path = "Java_Reboot/File_IO_Experiment/"; // 快捷路径引用, 懒得再打了
     FileInputStream unstructured_file = new FileInputStream(test_path+"bin_picture.jpg");
     System.out.println("当前读到的文件大小为: "+ unstructured_file.available() + " Bytes"); // 使用.available()方法获取'文件大小', 查到为8846 Bytes
     byte[] unstructured_storage = new byte[9000]; // 9000 > 8846, 设定一个byte数组的'存储空间'
@@ -129,16 +129,38 @@ public class Binary_and_Char_Input {
     System.out.println("尝试读取了 字节文件bin_picture.jpg 并存入了本地的byte[]数组中");
 
     // 我们假设读到的数据已经被存入到 byte[]中了, 下面进行'文件复制'输出验证
-    String copied_path = "Java_Rebott/File_IO_Experiment/Copied_Files/";
-    FileOutputStream output_picture = new FileOutputStream(copied_path+"copied_pictured.jpg");
+    String copied_path = "Java_Reboot/File_IO_Experiment/Copied_Files/";
+    FileOutputStream output_picture = new FileOutputStream(copied_path+"copied_picture.jpg");
     output_picture.write(unstructured_storage);
     output_picture.flush();
     output_picture.close();
     System.out.println("尝试复制了 字节文件bin_picture.jpg 至 Copied_Files文件夹下, 能跑到这说明应该成功了"); // mission successful (Jolly并感
     
+    System.out.println("\n接下来实践一下 字符文件的缓冲区 和 动态接收空间");
     // 接下来我们来试一下使用 缓冲区BufferedInputStream 和 ArrayList<Byte> 配合 while循环来读取内容
-    BufferedInputStream unstructured_buffer = new BufferedInputStream(new FileInputStream(test_path+"bin_music.mp3")); // 可追加自定义 缓存大小, 默认8KB
-    unstructured_buffer.available();
+    BufferedInputStream unstructured_input_buffer = new BufferedInputStream(new FileInputStream(test_path+"bin_music.mp3")); // 可追加自定义 缓存大小, 默认8KB
+    System.out.println("读取到bin_music.mp3的大小为: "+unstructured_input_buffer.available() + " Bytes");
+    ArrayList<Byte> dynamic_buffer = new ArrayList<>();
+    int current_byte_int;
+    while((current_byte_int = unstructured_input_buffer.read()) != -1 ){ // BufferedInputStream.read()读到文件尾时也会返回 "-1"
+      dynamic_buffer.add((byte) current_byte_int);
+    }
+    System.out.println("动态Byte数组当前存储的大小为: " + dynamic_buffer.size()); // 发现和读到的文件大小是完全一样的, 说明文件已经完全写入动态数组中了
+    unstructured_input_buffer.close(); // 完成读入操作
+    // 现在拿到储存好的数据了, 再用BufferedOutputStream进行Copy输出
+    BufferedOutputStream unstructured_output_buffer = new BufferedOutputStream(new FileOutputStream(copied_path+"double_music.mp3",true));
+    // Byte[] arraylist_data = (Byte[]) dynamic_buffer.toArray();
+    for(byte i : dynamic_buffer){
+      unstructured_output_buffer.write(i);
+    }
+    for(byte i: dynamic_buffer){
+      unstructured_output_buffer.write(i);
+    }
+
+    unstructured_output_buffer.flush();
+
+    // unstructured_output_buffer.flush();
+    unstructured_output_buffer.close();
     
 
   }
