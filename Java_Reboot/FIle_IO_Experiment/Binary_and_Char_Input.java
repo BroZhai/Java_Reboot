@@ -13,9 +13,9 @@ public class Binary_and_Char_Input {
     FileReader file = new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"); // 从上面查出来的路径开始'拼接'
     char[] file_content = new char[100]; // 小问题, 如果直接创建对应数组, 你并不知道 文件实际有多大 XD
     // System.out.println("下面开始逐个读取'字符'");
-    // int current_char_value;
-    // while((current_char_value = file.read()) != -1){ // FileReader对象.read(), 直接读取单个字符, 返回对应的int值, 读到结尾返回-1
-    //   System.out.println("当前读取到的字符为: "+ (char) current_char_value + "对应数字: " + current_char_value);
+    // int value_examined;
+    // while((value_examined = file.read()) != -1){ // FileReader对象.read(), 直接读取单个字符, 返回对应的int值, 读到结尾返回-1
+    //   System.out.println("当前读取到的字符为: "+ (char) value_examined + "对应数字: " + value_examined);
     // };
     file.read(file_content); // 将读取到的'字符'文件 直接存到对应的char[] 数组中
     System.out.print("从文件存储到char[]数组中的数据为: ");
@@ -28,14 +28,25 @@ public class Binary_and_Char_Input {
     System.out.println("接下来我们来看一下 字符缓冲区 BufferedReader 怎么用");
     FileReader my_file = new FileReader("Java_Reboot/File_IO_Experiment/char_lyrics.txt"); // 注意这里不要惯性思维, 有时不创建对象直接用 new FileReader也可以的 -w-
     // 我们发现直接读'固定大小'的文件不太现实, 所以我们就需要建立一个'读取缓冲区'
-    BufferedReader buffer_content = new BufferedReader(my_file, 20); // 设置缓冲区大小为20, 表示每次只读20个byte/char
-    StringBuilder sb = new StringBuilder(40); // StringBuilder随便初始大小都行, 反正会自动扩容
-    int current_char_value;
-    while( (current_char_value = buffer_content.read()) != -1){ // current_char_value动态读取赋值, 不为-1时持续循环
-      sb.append((char) current_char_value); // 将当前读取到的 current_char_value 转成 char 存到上面定好的StringBuilder中
-      // 小贴士: 这里的sb会在读完buffered的内容后, 再通知BufferedReader'读下一段', 从而达成'每次读固定长度'
+    // 这里我们要清楚数据在电脑中的读取流程: 磁盘 -> 内存 -> CPU寄存器, 其中 磁盘到内存 对应一个缓存, 内存 -> CPU 对应另一层缓存
+    BufferedReader buffer_content = new BufferedReader(my_file, 1024); // 设置'硬盘缓冲区'大小为1024, 表示每次会从 硬盘中的'源文件'中读 1024Byte 到 '内存', 直至文件被完全载入内存
+    
+    StringBuilder sb = new StringBuilder(40); // StringBuilder随便初始大小都行, 反正会自动扩容 (可以理解成这里是CPU寄存器中的'存储空间')
+    int value_examined; 
+    char[] buffer_temp = new char[20]; // 这里才是真正的'内存缓冲区', 每次.read()时都会按照这里的 [指定大小] 存到CPU的寄存器中
+    int read_counter = 1; // 读取计数器
+    while( (value_examined = buffer_content.read(buffer_temp)) != -1){ //  不为-1时持续循环, 将读到的值填到上面设的 暂存char[]数组中, 这里的.read(数组[])方法会返回'从内存读的字符数'
+      // 此时value_examined 就是从'内存缓冲区'中读取的长度
+      System.out.println("当前从'内存缓冲区'中fetch到的大小为: " + value_examined + " Bytes, 已读入CPU... 这是第 " + read_counter +" 次内存读取");
+      sb.append(buffer_temp, 0 ,value_examined); // .append(传入数据数组[], 读取偏移, 读取长度)
+      // 小贴士: 这里的sb会在读完buffered的内容后, 会再通知BufferedReader'读下一段'到'内存缓冲区'中, 从而达成'每次读固定长度'
+
+      // sb.append((char) value_examined); // 将当前读取到的 value_examined 转成 char 存到上面定好的StringBuilder中
+      // 注意, 上面这样'逐字'读取的方式是错的, 作用就直接等同于用FileReader了, 并没有实际减少I/O的次数
+
+      read_counter++; 
     }
-    System.out.println("StringBuilder从BufferedReader中'分段'存到的内容: "+sb.toString());
+    System.out.println("StringBuilder从'内存缓冲区'中读完的数据: "+sb.toString());
     System.out.println("当前StringBuilder的长度: " + sb.length());
     buffer_content.close(); // 在完成'流'操作后, 一定要'关闭流', 防止内存泄露
     my_file.close(); // 同上
@@ -121,7 +132,7 @@ public class Binary_and_Char_Input {
     /* 字节Byte流实验区 Unstructred Data */
     String test_path = "Java_Reboot/File_IO_Experiment/"; // 快捷路径引用, 懒得再打了
     FileInputStream unstructured_file = new FileInputStream(test_path+"bin_picture.jpg");
-    System.out.println("当前读到的文件大小为: "+ unstructured_file.available() + " Bytes"); // 使用.available()方法获取'文件大小', 查到为8846 Bytes
+    System.out.println("当前读到的文件大小为: "+ unstructured_file.available() + " Bytes"); // 使用.available()方法获取'文件大小', 查到为8846 Bytes (字节流特有的.available()方法)
     byte[] unstructured_storage = new byte[9000]; // 9000 > 8846, 设定一个byte数组的'存储空间'
     unstructured_file.read(unstructured_storage); // 将 字节文件 直接读入上面设的'存储空间' (暂未使用缓冲区, 一会儿下面搞)
     System.out.println("当前unstructured_storage[]数组的大小为: " + unstructured_storage.length + " Bytes"); 
@@ -158,8 +169,6 @@ public class Binary_and_Char_Input {
     }
 
     unstructured_output_buffer.flush();
-
-    // unstructured_output_buffer.flush();
     unstructured_output_buffer.close();
     
 
