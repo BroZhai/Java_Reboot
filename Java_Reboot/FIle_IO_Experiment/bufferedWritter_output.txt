@@ -1,0 +1,3 @@
+虽然直接用FileWriter更简单直接
+但是为了安全和高效读写, 我们一般还是用BufferedReader和Writer吧哦对了, BufferedWriter有个.newLine()直接换行方法来着?
+诶嘿, 还真有用我们再来尝试直接写入一个 字符数组[]: [我, 是, 琪, 露, 裺]
