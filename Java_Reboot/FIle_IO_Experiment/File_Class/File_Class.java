@@ -28,22 +28,41 @@ public class File_Class {
       System.out.println("文件夹 /temp_files 已经被创建力...");
     }
 
-    // 创建临时文件.createTempFile() (每次执行都会创建一个不同的空文件)
-    File generated_temp = File.createTempFile("temp_file", ".txt", output_path); // temp_file随机数字.txt
-    // 此时在/temp_files目录下就会有 temp_file随机数字.txt 创建
+    System.out.println();
 
-    // 先往临时文件中写内容, 最后再命名
-    BufferedWriter temp_writer = new BufferedWriter(new FileWriter(generated_temp)); // FileWrier中可以直接传File对象, 其他类似类同理
+    // 创建临时文件.createTempFile() (每次执行都会创建一个不同的空文件)
+    // 注意: 要更改文件名, 一定要等到所有数据的'读写'操作后, 最后再重命名 (.renameTo()本身原子性问题, 不会动更新'原File对象'的路径)
+    File generated_temp = File.createTempFile("temp_file", ".txt", output_path); // temp_file随机数字.txt
+    // 正常来说, 此时在/temp_files目录下就会有 temp_file随机数字.txt 创建, 我们来做个验证
+    if(generated_temp.exists()){
+      System.out.println("临时文件创建成功, 当前文件名: " + generated_temp.getName());
+    }else{
+      System.out.println("临时文件创建失败...程序已自行退出");
+      System.exit(1);
+    }
+    
     // 获取当前时间并进行格式化, 一会而作为内容输入'临时文件', 同时'更改的文件名'也会用
     LocalDateTime dateTime_now = LocalDateTime.now(); 
     DateTimeFormatter output_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH时mm分ss秒"); // 自定义'输出模版'
     String time_str = output_format.format(dateTime_now); // 应用'输出模版', 返回字符串
 
+    // BufferedWriter一旦打开File对象时, 就会'一直占用'该对象, 从而导致'其他的修改'失效(如.renameTo())
+    BufferedWriter temp_writer = new BufferedWriter(new FileWriter(generated_temp)); // FileWrier中可以直接传File对象, 其他类似类同理
+
     // 正式往临时文件中写内容
     temp_writer.write("本文件创建的时间为: " + time_str);
     temp_writer.flush();
     temp_writer.close();
-    generated_temp.renameTo(new File(output_path,"重命名临时文件"+ time_str + ".txt")); // 最后对'临时文件'进行重命名, 别忘了带路径 + 文件后缀, 传入的是File对象
+
+    // 在对临时文件的'读写操作'.close()完成后, 此时才能进行文件名的更改
+    if(generated_temp.renameTo(new File(output_path,"重命名临时文件"+ time_str + ".txt"))){ // 别忘了带路径 + 文件后缀, 传入的是File对象
+      System.out.println("临时文件在写入数据后前被成功重命名, 当前文件名: " + generated_temp.getName());
+      System.out.println("诶? 为什么这里更改显示的名字和之前一样? 哦! 原来是.renameTo()在成功更新后, 并不会更新'原File对象'的引用啊, 所以才没读到正确更新后的名字捏..."); // 这个大坑耗了老子3个小时, 去死吧 --
+      //
+    }else{
+      System.out.println("临时文件重命名失败...程序已自行退出");
+      System.exit(1);
+    }
 
   }
 
