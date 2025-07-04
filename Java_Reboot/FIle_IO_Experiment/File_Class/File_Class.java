@@ -28,35 +28,22 @@ public class File_Class {
       System.out.println("文件夹 /temp_files 已经被创建力...");
     }
 
-    // 创建临时文件 (每次执行都会创建一个不同的空文件)
+    // 创建临时文件.createTempFile() (每次执行都会创建一个不同的空文件)
+    File generated_temp = File.createTempFile("temp_file", ".txt", output_path); // temp_file随机数字.txt
+    // 此时在/temp_files目录下就会有 temp_file随机数字.txt 创建
 
-    File temp_file = File.createTempFile("temp_file", ".txt", output_path);  // 通过File.createTempFile创建一个'临时空文件', 通过传入'File路径对象'进行'输出目录指定' 
+    // 先往临时文件中写内容, 最后再命名
+    BufferedWriter temp_writer = new BufferedWriter(new FileWriter(generated_temp)); // FileWrier中可以直接传File对象, 其他类似类同理
+    // 获取当前时间并进行格式化, 一会而作为内容输入'临时文件', 同时'更改的文件名'也会用
+    LocalDateTime dateTime_now = LocalDateTime.now(); 
+    DateTimeFormatter output_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH时mm分ss秒"); // 自定义'输出模版'
+    String time_str = output_format.format(dateTime_now); // 应用'输出模版', 返回字符串
 
-    // 注: 上面创建的'临时空文件'名称后面会一定跟一段'随机数字'! 表明每个生成的'临时文件'都是独立的 (执行完上一行后文件会直接被创建)
-    // 一般来说, 我们不建议给'临时文件'重命名(一般文件还是ok的), 但是这里处于好奇, 踩了一大堆的雷最后实现了 '自定义重命名' (对之后正常的文件命名应该有个参考价值)
-    System.out.println("临时文件已成功创建, 文件名: "+ temp_file.getName());
-
-    // Deprecated, 这里自己的思路是用一个新的File对象 去指向 上面刚刚生成的文件, 但是给自己带到 new File()直接新建文件 的大坑里面去了 XD, 但是一些思路还是可以借鉴的
-    // File rename_temp = new File(output_path, temp_file.getName()); // rename_temp指向刚刚创建的'临时文件' (直接'拼接', 省事)
-    // // File rename_temp = new File(output_path.toString() + temp_file.getName());
-    // System.out.println("rename尝试获取的名称: " + rename_temp.getName());
-    
-    // 获取 和 格式化时间, 准备赋在文件名上
-    LocalDateTime datetime_now = LocalDateTime.now();
-    DateTimeFormatter read_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH点mm分ss秒"); // 读取LocalDateTime对象按照'该格式'进行输出 (自定义'关键字'位置)
-    String formatted_time = read_format.format(datetime_now);
-    System.out.println("当前的时间是: " + formatted_time);
-
-    BufferedWriter temp_writer = new BufferedWriter(new FileWriter(temp_file)); // 啊哈, File对象也可以直接作为'输入流'
-    temp_writer.write("该文件创建的时间为: " + formatted_time);
-    // Thread.sleep(5000);
+    // 正式往临时文件中写内容
+    temp_writer.write("本文件创建的时间为: " + time_str);
     temp_writer.flush();
     temp_writer.close();
-    System.out.println("BufferedWriter 尝试往 空File对象中 写入了内容");
-    // temp_file.renameTo(new File("临时文件" + formatted_time +".txt")); // 这里重命名成功了, 但因为忘记加'路径', 就输出到默认的'工作目录'去了 
-    temp_file.renameTo(new File(output_path, "临时文件"+ formatted_time+".txt")); // 正解
-    
-    
+    generated_temp.renameTo(new File(output_path,"重命名临时文件"+ time_str + ".txt")); // 最后对'临时文件'进行重命名, 别忘了带路径 + 文件后缀, 传入的是File对象
 
   }
 
