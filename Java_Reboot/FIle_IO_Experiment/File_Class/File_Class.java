@@ -30,8 +30,7 @@ public class File_Class {
 
     // 创建临时文件 (每次执行都会创建一个不同的空文件)
 
-    File temp_file = File.createTempFile("temp_file", ".txt", output_path);  // 通过File.createTempFile创建一个'临时空文件', 通过传入'File路径对象'进行'输出目录指定'
-    // temp_file.deleteOnExit(); // 设置该'临时文件'在JVM退出时删除
+    File temp_file = File.createTempFile("temp_file", ".txt", output_path);  // 通过File.createTempFile创建一个'临时空文件', 通过传入'File路径对象'进行'输出目录指定' 
 
     // 注: 上面创建的'临时空文件'名称后面会一定跟一段'随机数字'! 表明每个生成的'临时文件'都是独立的 (执行完上一行后文件会直接被创建)
     // 一般来说, 我们不建议给'临时文件'重命名(一般文件还是ok的), 但是这里处于好奇, 踩了一大堆的雷最后实现了 '自定义重命名' (对之后正常的文件命名应该有个参考价值)
