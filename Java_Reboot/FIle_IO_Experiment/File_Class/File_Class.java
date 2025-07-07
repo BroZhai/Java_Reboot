@@ -121,24 +121,37 @@ public class File_Class {
       System.out.println("该多级目录已存在...");
     }
 
+    System.out.println();
     // 目录遍历
-    File folder_list = new File(output_path.getParent()); // temp_files的上一级就到 File_IO_Experiment
+    File folder_list = new File("Java_Reboot/File_IO_Experiment"); // temp_files的上一级就到 File_IO_Experiment
     System.out.println("folder_list当前的目录为: " + folder_list.getPath());
     String[] files_in_folder_list = folder_list.list(); // 使用list方法取得当前目录下的 所有文件/文件夹, 返回一个String[]
     System.out.println("当前目录下有: " + Arrays.toString(files_in_folder_list));
 
     // 突然蹦出来两个新的接口, FileFilter 和 FileNameFilter, 主要在这里面就是根据 'File类的各种不同方法' 返回的boolean进行文件判断和过滤
-    // FileFilter: 根据文件属性(大小, 类型, 目录) 筛选文件
+    // FileFilter: 传入的File类可能会被解析成 文件 / 文件夹
     class TxtFilter implements FileFilter{
       public TxtFilter(){} // 空的构造函数
       public boolean accept(File current_file){
         String file_name = current_file.getName();
-        return current_file.isFile() && file_name.endsWith("/txt"); // 判断当前'文件' 是否为一个 .txt 文件
+        return current_file.isFile() && file_name.endsWith(".txt"); // 判断当前'文件' 是否为一个 .txt 文件
       }
     }
     TxtFilter txt_filter = new TxtFilter();
+
+    // FilenameFilter: 传入的File类会被'自动分开', 前面是所处路径, 后面是文件(夹)名
+    class Mp3Filter implements FilenameFilter{
+      public Mp3Filter(){}
+      public boolean accept(File path, String filename){
+        // 注: 这里前面的File是'目录对象'
+        boolean suffix_judge = filename.endsWith(".mp3");
+        return suffix_judge;
+      }
+    }
+    Mp3Filter mp3_filter = new Mp3Filter();
     
-    File[] file_arr = folder_list.listFiles(); // .listFiles返回File[]数组
+    File[] txtfile_arr = folder_list.listFiles(txt_filter); // .listFiles返回File[]数组, 传入FileFilter的实现类, 这里过滤出所有的.txt文件
+    File[] mp3file_arr = folder_list.listFiles(mp3_filter); // 同上, 但是这里传入的是一个FilenameFilter的实现类, 滤出所有的.mp3
 
     // StringBuilder[] sb_arr = new StringBuilder[10]; // 不用ArrayList, 哥们想办法另辟蹊径
     // for(int i=0; i<file_arr.length; i++){
@@ -147,12 +160,18 @@ public class File_Class {
     // }
     // 上面的StringBuilder[]本质上还是'静态数组', 并不会因为是个StringBuilder既可以'动态变大小', IMSB
 
-    ArrayList<String> filename_in_FileArr = new ArrayList<>();
-    for(File i : file_arr){
-      filename_in_FileArr.add(i.getName());
+    ArrayList<String> txtFiles_arraylist = new ArrayList<>(); // txt的动态数组
+    ArrayList<String> mp3Files_arraylist = new ArrayList<>(); // mp3的动态数组
+
+    for(File i : txtfile_arr){
+      txtFiles_arraylist.add(i.getName());
+    }
+    for(File i : mp3file_arr){
+      mp3Files_arraylist.add(i.getName());
     }
 
-    System.out.println("StringBuilder中的内容: " + filename_in_FileArr);
+    System.out.println("txtFiles_arraylist中的内容: " + txtFiles_arraylist.toString());
+    System.out.println("mp3Files_arraylist中的内容: " + mp3Files_arraylist.toString());
     System.out.println("JVM环境现已退出");
   }
 
