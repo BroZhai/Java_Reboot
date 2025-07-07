@@ -8,8 +8,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Copy_and_Paste {
-  // 在本Java中, 尝试来自行实现一下'文件复制&剪贴'功能
-
+  // 在本Java中, 尝试来自行实现一下 文件/文件夹 相关的功能
 
   public static void main(String[] args) throws IOException {
     String directory = "Java_Reboot/File_IO_Experiment/Self_Exercise";
@@ -26,7 +25,7 @@ public class Copy_and_Paste {
 
     System.out.print("\n请提供选择对应数字进行操作: ");
     Scanner user_input = new Scanner(System.in);
-    Pattern single_number = Pattern.compile("[1-7]{1}");
+    Pattern single_number = Pattern.compile("[\\d]{1}");
     boolean range_judge = user_input.findInLine(single_number) == null; // 找不到, true
     while(range_judge){
       System.out.print("无效输入, 请重试: ");
