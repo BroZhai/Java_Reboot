@@ -1,15 +1,19 @@
 package Java_Reboot.FIle_IO_Experiment.File_Class;
 // import java.io.BufferedReader;
 import java.io.File; // 导入File类
-
 import java.io.FileWriter; // 写'字符文件'
 import java.io.BufferedWriter; // '字符文件'硬盘缓冲区
 import java.io.IOException; // 文件读写异常类 (涉及磁盘读取都会有)
+
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+
 
 import java.time.LocalDateTime; // 为每个'临时文件'提供 创建时间
 import java.time.Instant; // 毫秒 / 秒 时间戳
 import java.time.ZoneId; // 时区设置 (解析'时间戳'要用)
 import java.time.format.DateTimeFormatter; // 为创建的时间提供'格式化'读取
+import java.util.ArrayList; // 动态数组展示&操作用
 import java.util.Arrays; // 静态数组展示&操作用
 
 public class File_Class {
@@ -123,6 +127,32 @@ public class File_Class {
     String[] files_in_folder_list = folder_list.list(); // 使用list方法取得当前目录下的 所有文件/文件夹, 返回一个String[]
     System.out.println("当前目录下有: " + Arrays.toString(files_in_folder_list));
 
+    // 突然蹦出来两个新的接口, FileFilter 和 FileNameFilter, 主要在这里面就是根据 'File类的各种不同方法' 返回的boolean进行文件判断和过滤
+    // FileFilter: 根据文件属性(大小, 类型, 目录) 筛选文件
+    class TxtFilter implements FileFilter{
+      public TxtFilter(){} // 空的构造函数
+      public boolean accept(File current_file){
+        String file_name = current_file.getName();
+        return current_file.isFile() && file_name.endsWith("/txt"); // 判断当前'文件' 是否为一个 .txt 文件
+      }
+    }
+    TxtFilter txt_filter = new TxtFilter();
+    
+    File[] file_arr = folder_list.listFiles(); // .listFiles返回File[]数组
+
+    // StringBuilder[] sb_arr = new StringBuilder[10]; // 不用ArrayList, 哥们想办法另辟蹊径
+    // for(int i=0; i<file_arr.length; i++){
+    //   sb_arr[i] = new StringBuilder(); // StringBuilder数组, 每一个元素都是 单独的'StringBuilder对象'
+    //   sb_arr[i].append(file_arr[i].getName()); // 为每一个单独的StringBuilder对象元素 写入 File[]数组中的文件名
+    // }
+    // 上面的StringBuilder[]本质上还是'静态数组', 并不会因为是个StringBuilder既可以'动态变大小', IMSB
+
+    ArrayList<String> filename_in_FileArr = new ArrayList<>();
+    for(File i : file_arr){
+      filename_in_FileArr.add(i.getName());
+    }
+
+    System.out.println("StringBuilder中的内容: " + filename_in_FileArr);
     System.out.println("JVM环境现已退出");
   }
 
