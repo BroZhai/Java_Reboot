@@ -172,6 +172,46 @@ public class File_Class {
 
     System.out.println("txtFiles_arraylist中的内容: " + txtFiles_arraylist.toString());
     System.out.println("mp3Files_arraylist中的内容: " + mp3Files_arraylist.toString());
+
+    // 权限控制
+    // 创建一个'只读文件'对象, 提前在这里写好内容, 出去之后不能修改
+    System.out.println();
+    File readonly_file = new File("Java_Reboot/File_IO_Experiment/readonly_output.txt");
+    readonly_file.createNewFile();
+    System.out.println("当前readonly_file 可写吗? " + readonly_file.canWrite()); // true, 执行一次之后变false
+    if(readonly_file.canWrite()){
+      System.out.println("正在往该文件中写入信息...");
+      BufferedWriter file_writer = new BufferedWriter(new FileWriter(readonly_file));
+      file_writer.write("这段信息是在Java中进行写入的, 马上就要被设为readonly了");
+      file_writer.flush();
+      file_writer.close();
+      if(readonly_file.setReadOnly()){ // 现在设置只读
+        System.out.println("现在已为该文件设置了readonly权限");
+        System.out.println("现在还可写吗? " + readonly_file.canWrite());
+      }
+    }else{
+      System.out.println("当前文件 " + readonly_file.getName() + " 处于只读状态, 无法进行写入");
+    }
+    
+    System.out.println("现在读取另一个只读文件, 尝试将其变成'可写'的");
+    File read_to_write = new File("Java_Reboot/File_IO_Experiment/readonly_to_writable.txt");
+    if(read_to_write.canWrite()){
+      System.out.println("检测到当前文件可写, 为了走流程程序先将其设置成只读qwq");
+      read_to_write.setReadOnly();
+    }
+    System.out.println("文件 " + read_to_write.getName() + " 当前可写吗? " + read_to_write.canWrite());
+    System.out.println("尝试通过.setWritable()将其变为可写文件中");
+    if (read_to_write.setWritable(true)) {
+      System.out.println("成功修改可写属性");
+      BufferedWriter writer = new BufferedWriter(new FileWriter(read_to_write,true));
+      writer.write("\n这是尝试追加的新内容");
+      writer.flush();
+      writer.close();
+      System.out.println("已成功往 " + read_to_write.getName() + " 文件中追加新内容, 请自行前往文件查看");
+    }else{
+      System.out.println("未能将该文件设置为'可写'...");
+    }
+
     System.out.println("JVM环境现已退出");
   }
 
