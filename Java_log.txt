@@ -76,4 +76,5 @@
 在实现遍历目录时遇到了两个新接口 FileFilter 和 FileNameFilter, 又挖出来一个新坑
 搞明白了FileFilter 和 FilenameFilter这两个接口分别是什么, 区别在哪, 进行了对应的实验
 成功实践了File类的大部分常用方法, 整理了对应的笔记
+尝试研究Scanner类
 2025.07.06
