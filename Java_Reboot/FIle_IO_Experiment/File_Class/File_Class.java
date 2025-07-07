@@ -10,6 +10,7 @@ import java.time.LocalDateTime; // 为每个'临时文件'提供 创建时间
 import java.time.Instant; // 毫秒 / 秒 时间戳
 import java.time.ZoneId; // 时区设置 (解析'时间戳'要用)
 import java.time.format.DateTimeFormatter; // 为创建的时间提供'格式化'读取
+import java.util.Arrays; // 静态数组展示&操作用
 
 public class File_Class {
   public static void main(String[] args) throws IOException, InterruptedException{
@@ -70,6 +71,7 @@ public class File_Class {
 
     /* 其他的实例方法实验区, 还有很多呢! */
     System.out.println("\n我们再来看点其他的示例方法");
+    // 文件 / 目录状态判断 & 查询
     System.out.println(output_path + "是路径吗? " + output_path.isDirectory()); // true
     System.out.println("那它是绝对路径吗? " + output_path.isAbsolute()); // false
     File target_file = new File("Java_Reboot/File_IO_Experiment/File_Class/Am_I_a_file.txt"); // 将指定外部文件作为一个 File对象 (如有
@@ -79,9 +81,49 @@ public class File_Class {
       System.out.println("那么是文件, 就一定有个大小, 该文件的大小为: " + target_file.length() + " Bytes");
       Instant ms_till_now = Instant.ofEpochMilli(target_file.lastModified()); // .lastModifed返回的是'毫秒时间戳', 默认的长毫秒不带'时区'的, 要对其解析的话, 我们就需要一个'带时区'的DateTimeFormatter
       DateTimeFormatter ms_with_zone = DateTimeFormatter.ofPattern("yyyy-MM-dd HH时:mm分:ss秒").withZone(ZoneId.systemDefault()); // 使用系统的'时区'
-      System.out.println("该文件最后一次修改于: " + ms_with_zone.format(ms_till_now)); 
+      System.out.println("该文件最后一次修改于: " + ms_with_zone.format(ms_till_now));  // 毫秒时间戳 转 正常日期
     }
     
+    System.out.println();
+    // 下面做了一个小实验, 在正常的路径中突然加入'/..'来尝试返回上一级目录在语法上是可行的, 但是.exist()并不会'灵活变通', 还是会照着路径'死查'
+    // File test = new File(target_file.getPath() + "/../char_lyrics.txt");
+    // String file_returned_path = target_file.getPath() + "/..";
+    // System.out.println("test 取得的路径为: " + test.getPath());
+    // System.out.println("这个路径取得的文件存在吗? " + test.exists());
+
+    // 如果要取得'上一级', 建议通过.getParent()方法
+    File last_folder = new File(target_file.getParent());
+    System.out.println("last_folder通过target_file为参考取得的路径为: " + last_folder.getPath()); // target_file 位于 /Java_Reboot/File_IO_Experiment/File_Class/Am_I_a_file.txt, 返回'上一级'就是到/File_Class(文件也算'一级')
+    System.out.println("last_folder再往上一级是: " + last_folder.getParent());
+    
+    // 文件 / 目录操作
+    System.out.println("\n接下来我们来看看针对文件/目录的操作");
+    File new_folder = new File("Java_Reboot/File_IO_Experiment/File_Class/mkdir_folder"); // 指定新建的'mkdir_folder'位于'File_Class'目录下
+    if(new_folder.mkdir()){
+      System.out.println("新文件夹 " + new_folder.getName() + "成功创建");
+    }else{
+      System.out.println("文件夹 " + new_folder.getName() + "已经被创建了...");
+    }
+    File generate_file = new File(new_folder.getPath() + "/My_newfile.txt"); // 往新文件夹中写入新文件 My_newfile.txt;
+    generate_file.deleteOnExit(); // 设定该文件在JVM退出时被删除
+    System.out.println("现在是在.createNewFile()之前, 文件是否存在: " + generate_file.exists());  // false
+    generate_file.createNewFile();
+    System.out.println("现在是.createNewFile()之后, 现在文件在不在? " + generate_file.exists()); // true
+
+    File multi_folder = new File("Java_Reboot/File_IO_Experiment/File_Class/multi_folder/folder_1/folder_2/last_folder"); // 试一下创建多级目录
+    if(multi_folder.mkdirs()){
+      System.out.println("成功在File_Class下创建了多级目录/multi_folder/folder_1/folder_2/last_foler");
+    }else{
+      System.out.println("该多级目录已存在...");
+    }
+
+    // 目录遍历
+    File folder_list = new File(output_path.getParent()); // temp_files的上一级就到 File_IO_Experiment
+    System.out.println("folder_list当前的目录为: " + folder_list.getPath());
+    String[] files_in_folder_list = folder_list.list(); // 使用list方法取得当前目录下的 所有文件/文件夹, 返回一个String[]
+    System.out.println("当前目录下有: " + Arrays.toString(files_in_folder_list));
+
+    System.out.println("JVM环境现已退出");
   }
 
 }
