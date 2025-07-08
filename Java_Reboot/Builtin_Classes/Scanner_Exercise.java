@@ -10,7 +10,7 @@ public class Scanner_Exercise {
   public static void main(String[] args) {
     // 先来看看最简单的'控制台输入'
     System.out.print("我们来玩下Scanner, 请输入任意内容, 最好有空格(可以直接回车跳过): ");
-    Scanner sc = new Scanner(System.in);
+    Scanner sc = new Scanner(System.in); // 注: 这一行并不会'直接唤起'输入
     if (!sc.nextLine().isEmpty()) { //  直接敲回车时, 默认你还没机会'写'下一行时, 程序就判断你'直接敲了回车' (毛都没输)
       int read_couter = 0;
       while(read_couter<3 && sc.hasNext()){
