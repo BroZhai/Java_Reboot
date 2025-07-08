@@ -48,15 +48,20 @@ public class FileTool {
 
   // 写入内容到文件 传入File对象, 是否'追加写入'boolean
   public static boolean write_file(File target_file, boolean append) {
+    if(append){
+      System.out.println("\n即将对文件进行'覆盖'写入");
+    }else{
+      System.out.println("\n本次对文件'追加'写入");
+    }
     try {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(target_file, StandardCharsets.UTF_8,append)); // 指定字符编码为UTF-8, 兼容中文输入
+      BufferedWriter writer = new BufferedWriter(new FileWriter(target_file, !append)); 
       Scanner content = new Scanner(System.in);
       String input_content;
       boolean continue_write = true;
       int line_counter = 1;
       Pattern end_format = Pattern.compile("^.*/end$");
       boolean end_judge;
-      // System.out.println("注: 输中文有bug, 字符编码的问题, 这里懒得搞了 XD"); // 打脸了, 其实挺简单的
+      System.out.println("注: 输中文有bug, 字符编码的问题, 这里懒得搞了 XD");
       while(continue_write){
         System.out.print("请书写第 "+ line_counter +" 行的内容, 输入/end退出: "); 
         input_content = content.nextLine();
@@ -112,8 +117,9 @@ public class FileTool {
         valid_ans = FileTool.yes_or_no(answer);
       }
       if(valid_ans){ // 输入有效
-        boolean want_append = 
-        FileTool.write_file(output_file, !valid_ans);
+        char[] want_append = answer.toCharArray();
+        boolean append_judge = (want_append[0] == 'Y') || (want_append[0] == 'y');
+        FileTool.write_file(output_file, append_judge);
       }
     }else{
         try {
