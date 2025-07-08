@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+
 // 获取标准输入流
 import java.util.Scanner;
 
@@ -39,7 +39,7 @@ public class FileTool {
   }
 
   // 校验文件名合法性
-  public static boolean filename_judge(String filename) {
+  public static boolean validate_filename(String filename) {
     // Pattern symbol_set = Pattern.compile("^[^\\/:*?\"\\[\\]<>|]$"); // 文件名不能包含 \
     // / : * ? " < > | (把这些'不要'的符号滤掉)
     Pattern symbol_set = Pattern.compile(
@@ -96,6 +96,13 @@ public class FileTool {
     return true;
   }
 
+  // 校验'路径名'是否合法
+  public static boolean validate_pathname(String pathname){
+    Pattern path_format = Pattern.compile("^(/[0-9a-zA-Z_]+)+$"); // 这个就写简单点了, 不搞的太复杂
+    boolean is_valid = path_format.matcher(pathname).matches();
+    return is_valid;
+  }
+
   // 1. 创建文件 并 写入数据
   public static void create_File() {
     System.out.println("\n欢迎来到'文件创建' (这里仅为创建'字符文件' Structured Data owo)");
@@ -103,11 +110,11 @@ public class FileTool {
     Scanner user_input = new Scanner(System.in);
     String filename = user_input.nextLine().trim();
     // System.out.println("\n所用输入的文件名合法吗? " + legal_filename);
-    boolean filename_pass = FileTool.filename_judge(filename);
+    boolean filename_pass = FileTool.validate_filename(filename);
     while (!filename_pass) { // 文件名校验不通过
       System.out.print("输入文件名不合法, 请重新输入: ");
       filename = user_input.nextLine();
-      filename_pass = FileTool.filename_judge(filename);
+      filename_pass = FileTool.validate_filename(filename);
     }
     System.out.println("文件名合法性校验成功!");
 
@@ -161,14 +168,53 @@ public class FileTool {
   // 5. 新建文件夹
   public static void create_Folder() {
     System.out.println("欢迎来到创建文件夹");
-    System.out.println("请问是否要创建多级目录? [Y/N]: ");
+    System.out.print("请问是否要创建多级目录? [Y/N]: ");
     Scanner user_input = new Scanner(System.in);
     String input_content = user_input.nextLine();
-    boolean valid_input = FileTool.validate_yes_no(input_content);
-    while(!valid_input){
-      System.out.println("输入无效, 请重试: ");
+    String path; // 真正获取到的'合法路径'输入 (这里暂时声明, 一会而取到合法路径就赋值)
+    boolean validate_yes_no = FileTool.validate_yes_no(input_content);
+    while(!validate_yes_no){ // Yes No 合法判断
+      System.out.print("输入无效, 请重试: ");
       input_content = user_input.nextLine();
-      valid_input = FileTool.validate_yes_no(input_content);
+      validate_yes_no = FileTool.validate_yes_no(input_content);
+    }
+    boolean is_multiple = FileTool.get_yes_no(input_content);
+    if(is_multiple){ // 多级目录 
+      System.out.println("\n用户选择了创建'多级目录'");
+      System.out.print("请输入多级目录路径 (/folder_A/folder_B/...): ");
+      path = user_input.nextLine();
+      boolean valid_path = FileTool.validate_pathname(path);
+      while (!valid_path) {
+        System.out.print("输入的文件路径不合法! 请重新输入 (/folder_A/folder_B/...): ");
+        path = user_input.nextLine();
+        valid_path = FileTool.validate_pathname(path);
+      }
+      System.out.println("输入的文件路径 " + path + " 合法!");
+      File multi_path = new File(default_path+path);
+      
+      if(multi_path.mkdirs()){
+        System.out.println("成功在创建了多级目录 " + default_path + path);
+      }else{
+        System.out.println("创建多级目录失败, 可能目录已存在...");
+      }
+      
+    }else{ // 单级目录
+      System.out.println("\n用户选择创建'单个文件夹'");
+      System.out.print("请输入单路径名称(/my_folder): ");
+      path = user_input.nextLine();
+      boolean valid_path = FileTool.validate_pathname(path);
+      while(!valid_path){
+        System.out.print("输入路径不合法! 请重新输入 (/my_folder): ");
+        path = user_input.nextLine();
+        valid_path = FileTool.validate_pathname(path);
+      }
+      System.out.println("输入文件夹名称 " + path + "合法!");
+      File single_path = new File(default_path,path);
+      if(single_path.mkdir()){
+        System.out.println("成功创建单级目录: " + default_path + path);
+      }else{
+        System.out.println("创建单级目录失败, 可能目录已存在 或 输入了多级目录...");
+      }
     }
     
   }
@@ -226,7 +272,7 @@ public class FileTool {
         break;
 
       case "5":
-
+        FileTool.create_Folder();
         break;
       case "6":
 
