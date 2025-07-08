@@ -26,7 +26,14 @@ public class Copy_and_Paste {
     System.out.print("请输入文件名: ");
     String filename = user_input.nextLine(); // 读取用户输入的文件名
     Matcher filename_format = symbol_set.matcher(filename);
-    System.out.println("\n所用输入的文件名合法吗? " + filename_format.matches());
+    boolean legal_filename = filename_format.matches();
+    // System.out.println("\n所用输入的文件名合法吗? " + legal_filename);
+    while(!legal_filename){
+      System.out.print("输入文件名不合法, 请重新输入: ");
+      filename = user_input.nextLine();
+      legal_filename = symbol_set.matcher(filename).matches();
+    }
+    System.out.println("文件名校验成功!");
   }
 
   // 主函数
