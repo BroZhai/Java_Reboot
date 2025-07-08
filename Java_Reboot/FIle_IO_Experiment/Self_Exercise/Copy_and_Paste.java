@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 public class Copy_and_Paste {
   // 在本Java中, 尝试来自行实现一下 文件/文件夹 相关的功能
+  Pattern yn_RE = Pattern.compile("^[YyNn]+$");
+  Matcher yes_or_no;
 
   // 方法定义&实现区域
   public static void create_File(){
@@ -20,7 +22,7 @@ public class Copy_and_Paste {
     Pattern symbol_set = Pattern.compile(
         "^[^\\\\/:*?\\\"\\\\[\\\\]<>|]+$"    // 基础字符集（排除控制符和空格）
         + "(?<!\\.)"                         // 匹配的'文件名'?<!前面 不能以 \ . 开头
-        + "(?!\\s)"                          // 匹配的'文件名'?!后面 不能以! 空格 结尾 (其实Window会处理结尾的空格, 嘻嘻)
+        + "(?!\\s)"                          // 匹配的'文件名'?!后面 不能以! 空格 结尾 (其实Windows会处理结尾的空格, 嘻嘻)
         + "{1,260}"                          // 长度限制
     );
     System.out.print("请输入文件名: ");
@@ -34,6 +36,7 @@ public class Copy_and_Paste {
       legal_filename = symbol_set.matcher(filename).matches();
     }
     System.out.println("文件名校验成功!");
+
   }
 
   // 主函数
