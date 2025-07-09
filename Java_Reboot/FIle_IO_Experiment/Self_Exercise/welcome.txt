@@ -7,9 +7,9 @@ oooooooooooo  o8o  oooo            ooooooooooooo                     oooo
  888          888   888  888    .o      888      888   888 888   888  888  
 o888o        o888o o888o `Y8bod8P'     o888o     `Y8bod8P' `Y8bod8P' o888o                                                              
 1. 新建文件 (OK)
-2. 复制/移动文件
+2. 复制文件
 3. 删除文件
-4. 重命名文件
+4. 移动/重命名文件
 5. 新建文件夹 (OK)
 6. 删除文件夹 (OK)
 7. 批量重命名
