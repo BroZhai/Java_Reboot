@@ -34,9 +34,9 @@ public class FileTool {
   }
 
   // 将用户输入的 Y y N n 转换为boolean进行返回
-  public static boolean get_yes_no(String user_input){
+  public static boolean get_yes_no(String user_input) {
     char[] yn_arr = user_input.toCharArray();
-    return ((yn_arr[0] == 'Y') || (yn_arr[0]=='y')); // Y y 返回true, N n 为false (需先走一遍上面的validate_yes_no来确保'输入有效')
+    return ((yn_arr[0] == 'Y') || (yn_arr[0] == 'y')); // Y y 返回true, N n 为false (需先走一遍上面的validate_yes_no来确保'输入有效')
   }
 
   // 校验文件名合法性
@@ -98,41 +98,61 @@ public class FileTool {
   }
 
   // 校验'路径名'是否合法
-  public static boolean validate_pathname(String pathname){
+  public static boolean validate_pathname(String pathname) {
     Pattern path_format = Pattern.compile("^(/[0-9a-zA-Z_]+)+$"); // 这个就写简单点了, 不搞的太复杂
     boolean is_valid = path_format.matcher(pathname).matches();
     return is_valid;
   }
 
   // 列出当前目录所有文件&文件夹, 传入一个File对象'指定路径', 第一个布尔'只列文件', 第二个布尔'只列文件夹', 两个都true直接全部返回
-  public static String list_files_and_folders(File pathname, boolean list_files, boolean list_folders){
-    if(!list_files&&!list_folders){
+  public static String list_files_and_folders(File pathname, boolean list_files, boolean list_folders) {
+    if (!list_files && !list_folders) {
       System.out.println("哦呀? 你想干什么?");
       System.exit(0);
     }
     ArrayList<String> final_output = new ArrayList<>();
     File[] files_and_folders = pathname.listFiles();
-    for(File i: files_and_folders){
-      if(list_files && i.isFile()){ // 追加文件
+    for (File i : files_and_folders) {
+      if (list_files && i.isFile()) { // 追加文件
         final_output.add(i.getName());
       }
-      if(list_folders && i.isDirectory()){ // 追加文件夹
+      if (list_folders && i.isDirectory()) { // 追加文件夹
         final_output.add(i.getName());
       }
     }
     return final_output.toString();
   }
 
-  // 单独写一个文件 / 文件夹删除方法
-  public static boolean delete_files_and_folders(File file, boolean list_files, boolean list_folders){
-    if(!file.exists()){
+  // 单独整一个文件 / 文件夹删除方法, 传入File对象, 看要删文件 还是 文件夹
+  public static boolean delete_files_and_folders(File file) {
+    if (!file.exists()) { // 一般来说不会触发, 前面做足了'检查'的话
       System.out.println("文件/文件夹不存在");
+      System.exit(1);
+    }
+    if (file.isFile()) { // 删除的是文件
+      if (file.delete()) {
+        System.out.println("成功删除了文件: " + file.getName());
+        return true;
+      } else {
+        System.out.println("未能成功删除文件: " + file.getName() + " ...");
+        return false;
+      }
+    } else if (file.isDirectory()) { // 删除的是路径, 只能删除'空路径'
+      if (file.delete()) {
+        System.out.println("成功删除了嵌套(空)文件夹: " + file.getName());
+        return true;
+      } else {
+        System.out.println("检测到'仍有内容'的嵌套文件夹, 请自行进入到 " + file.getPath() + " 下再尝试执行本方法...");
+        return false;
+      }
     }
     return false;
+
   }
 
-
-  /* ---------------------------------分割线----------------------------------------- */
+  /*
+   * ---------------------------------分割线-----------------------------------------
+   */
 
   // 1. 创建文件 并 写入数据
   public static void create_File() {
@@ -152,7 +172,7 @@ public class FileTool {
     File output_file = new File(default_path, filename);
     if (output_file.exists()) {
       System.out.print("检测到当前目录中已有同名文件, 是否继续进行覆盖写入? [Y/N]: ");
-      String answer = user_input.nextLine(); 
+      String answer = user_input.nextLine();
       boolean valid_ans = FileTool.validate_yes_no(answer);
       // System.out.println("用户输入了: " + write + " validate_yes_no格式判断的结果为: " +
       // validate_yes_no.matches());
@@ -167,22 +187,22 @@ public class FileTool {
         boolean append_judge = FileTool.get_yes_no(answer);
         FileTool.write_file(output_file, append_judge);
       }
-    } else { 
+    } else {
       try { // 没有找到同名文件, 直接创建新文件
         output_file.createNewFile();
         // output_file.deleteOnExit();
         System.out.print("文件现已成功创建至默认目录" + default_path + "下\n你想往其中写入字符内容吗? [Y/N]: ");
         String answer = user_input.nextLine();
         boolean valid_input = FileTool.validate_yes_no(answer);
-        while(!valid_input){
+        while (!valid_input) {
           System.out.println("输入无效, 请重试: ");
           answer = user_input.nextLine();
           valid_input = FileTool.validate_yes_no(answer);
         }
         boolean write_or_not = FileTool.get_yes_no(answer);
-        if(write_or_not){
+        if (write_or_not) {
           FileTool.write_file(output_file, write_or_not); // 直接书写(覆盖)
-        }else{
+        } else {
           System.out.println("没有往 " + output_file.getName() + " 写入任何信息, 当前为一个空文件");
         }
       } catch (IOException e) {
@@ -204,13 +224,13 @@ public class FileTool {
     String input_content = user_input.nextLine();
     String path; // 真正获取到的'合法路径'输入 (这里暂时声明, 一会而取到合法路径就赋值)
     boolean validate_yes_no = FileTool.validate_yes_no(input_content);
-    while(!validate_yes_no){ // Yes No 合法判断
+    while (!validate_yes_no) { // Yes No 合法判断
       System.out.print("输入无效, 请重试: ");
       input_content = user_input.nextLine();
       validate_yes_no = FileTool.validate_yes_no(input_content);
     }
     boolean is_multiple = FileTool.get_yes_no(input_content);
-    if(is_multiple){ // 多级目录 
+    if (is_multiple) { // 多级目录
       System.out.println("\n用户选择了创建'多级目录'");
       System.out.print("请输入多级目录路径 (/folder_A/folder_B/...): ");
       path = user_input.nextLine();
@@ -221,37 +241,37 @@ public class FileTool {
         valid_path = FileTool.validate_pathname(path);
       }
       System.out.println("输入的文件路径 " + path + " 合法!");
-      File multi_path = new File(default_path+path);
-      
-      if(multi_path.mkdirs()){
+      File multi_path = new File(default_path + path);
+
+      if (multi_path.mkdirs()) {
         System.out.println("成功在创建了多级目录 " + default_path + path);
-      }else{
+      } else {
         System.out.println("创建多级目录失败, 可能目录已存在...");
       }
-      
-    }else{ // 单级目录
+
+    } else { // 单级目录
       System.out.println("\n用户选择创建'单个文件夹'");
       System.out.print("请输入单路径名称(/my_folder): ");
       path = user_input.nextLine();
       boolean valid_path = FileTool.validate_pathname(path);
-      while(!valid_path){
+      while (!valid_path) {
         System.out.print("输入路径不合法! 请重新输入 (/my_folder): ");
         path = user_input.nextLine();
         valid_path = FileTool.validate_pathname(path);
       }
       System.out.println("输入文件夹名称 " + path + "合法!");
-      File single_path = new File(default_path,path);
-      if(single_path.mkdir()){
+      File single_path = new File(default_path, path);
+      if (single_path.mkdir()) {
         System.out.println("成功创建单级目录: " + default_path + path);
-      }else{
+      } else {
         System.out.println("创建单级目录失败, 可能目录已存在 或 输入了多级目录...");
       }
     }
-    
+
   }
 
   // 6. 删除文件夹 (包含 空文件夹 和 有内容的文件夹)
-  public static void delete_Empty_Folder(){
+  public static void delete_Empty_Folder() {
     System.out.println("欢迎来到删除'文件夹'");
     Scanner user_input = new Scanner(System.in);
     System.out.println("当前位于Self_Exercise目录下");
@@ -259,74 +279,80 @@ public class FileTool {
     System.out.println("可前往目录: " + FileTool.list_files_and_folders(current_folder, false, true));
     System.out.print("请先输入要前往的目录, 如/folder_a: "); // 由于仅为实践, 这里只实现'前往一次' (在真正的实践中要反复的问用户'到哪里停下来'后再进指定操作)
     String valid_path = user_input.nextLine();
-    File go_to_path = new File(default_path+valid_path);
+    File go_to_path = new File(default_path + valid_path);
     boolean is_pathname_valid = FileTool.validate_pathname(valid_path);
     boolean is_path_exists = go_to_path.exists();
     while (!is_pathname_valid || !is_path_exists) {
       // System.out.print("输入的路径名非法或不存在, 请重新输入 (如 /folder_a): ");
-      if(!is_pathname_valid){
+      if (!is_pathname_valid) {
         System.out.print("输入的文件夹的名称不合法, 请重新输入: ");
-      }else if(!is_path_exists){
+      } else if (!is_path_exists) {
         System.out.print("找不到对应的文件夹, 请重新输入: ");
       }
       valid_path = user_input.nextLine();
       is_pathname_valid = FileTool.validate_pathname(valid_path);
-      go_to_path = new File(default_path+valid_path);
+      go_to_path = new File(default_path + valid_path);
       is_path_exists = go_to_path.exists();
     }
     System.out.println("\n输入的路径合法且存在!");
-    
 
-    String file_and_folders = FileTool.list_files_and_folders(go_to_path,false,true);
-    System.out.println("前往的目录"+default_path+valid_path+"中有如下文件夹: \n" + file_and_folders);
+    String file_and_folders = FileTool.list_files_and_folders(go_to_path, false, true);
+    System.out.println("前往的目录" + default_path + valid_path + "中有如下文件夹: \n" + file_and_folders);
     System.out.print("请输入要想删除的文件夹名称(如 /folder_a, 注意斜杠): ");
     String folder_name = user_input.nextLine(); // 获取'文件夹名'
-    File target_folder = new File(go_to_path+folder_name); 
+    File target_folder = new File(go_to_path + folder_name);
     // System.out.println("当前tgt_folder的路径': "+ target_folder.getPath());
-    // System.out.println("default path: " + default_path + ", folder_name: " + folder_name);
+    // System.out.println("default path: " + default_path + ", folder_name: " +
+    // folder_name);
     is_pathname_valid = FileTool.validate_pathname(folder_name); // 路径名合法校验
     is_path_exists = target_folder.exists(); // 路径存在性校验
     while (!is_pathname_valid || !is_path_exists) {
       // System.out.print("输入的路径名非法或不存在, 请重新输入 (如 /folder_a): ");
-      if(!is_pathname_valid){
+      if (!is_pathname_valid) {
         System.out.print("输入的文件夹的名称不合法, 请重新输入: ");
-      }else if(!is_path_exists){
+      } else if (!is_path_exists) {
         System.out.print("找不到对应的文件夹, 请重新输入: ");
       }
-      // System.out.println("路径合法吗: " + is_pathname_valid + ", 路径存在吗: " + is_path_exists);
-      // System.out.println("target_folder名称 " + target_folder.getName() + ", target_folder路径 " + target_folder.getPath()); // 调试用
+      // System.out.println("路径合法吗: " + is_pathname_valid + ", 路径存在吗: " +
+      // is_path_exists);
+      // System.out.println("target_folder名称 " + target_folder.getName() + ",
+      // target_folder路径 " + target_folder.getPath()); // 调试用
       folder_name = user_input.nextLine();
       is_pathname_valid = FileTool.validate_pathname(folder_name);
-      target_folder = new File(go_to_path+folder_name);
+      target_folder = new File(go_to_path + folder_name);
       is_path_exists = target_folder.exists();
     }
-    if(target_folder.delete()){
+    if (target_folder.delete()) {
       System.out.println("成功删除了 " + target_folder.getPath());
-    }else{ // 删除'有内容'的文件夹追加到这里了
-      System.out.println("未能删除 " + target_folder.getName() +", 可能是文件夹中仍有文件 ...");
-      System.out.print("您仍想要删除它吗? [Y/N]: ");
+    } else { // 删除'有内容'的文件夹追加到这里了
+      System.out.println("检测到" + target_folder.getName() + "文件夹中仍有文件 ...");
+      System.out.print("您仍想要完全删除它吗? [Y/N]: ");
       String confirmation = user_input.nextLine();
       boolean valid_input = FileTool.validate_yes_no(confirmation);
-      while(!valid_input) {
+      while (!valid_input) {
         System.out.println("输入无效, 请重新输入[Y/N]: ");
         confirmation = user_input.nextLine();
         valid_input = FileTool.validate_yes_no(confirmation);
       }
       boolean continue_delete = FileTool.get_yes_no(confirmation);
-      if(continue_delete){
+      if (continue_delete) {
         System.out.println("用户选择了继续删除");
         File[] files_in_target_folder = target_folder.listFiles();
-        for(File i : files_in_target_folder){
-
+        for (File i : files_in_target_folder) {
+          FileTool.delete_files_and_folders(i); // 移除了'有内容'文件夹中的所有文件 (如果里面仍有'有内容'的文件夹不保证能移除)
+        }// '尝试'移除了文件夹中的所有内容
+        if(target_folder.delete()){
+          System.out.println("成功删除了'目标文件夹': " + target_folder.getName());
+        }else{
+          System.out.println("未能'完全移除'目标文件夹: " + target_folder.getName() + "...");
         }
-      }
-      else{
+
+      } else {
         System.out.println("没有删除 " + target_folder.getName());
       }
     }
 
   }
-
 
   // 主函数 (这里调用类中的方法要用确保是 '类'的静态方法, FileTool.xxx(), 上面的方法处于'同一级'就不用, 但是要用也行, 统一规范)
   public static void main(String[] args) throws IOException {
@@ -394,7 +420,7 @@ public class FileTool {
 
         break;
       case "9":
-        
+
         break;
 
       case "0":
