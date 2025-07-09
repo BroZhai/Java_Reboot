@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.util.Arrays;
 // 获取标准输入流
 import java.util.Scanner;
 
@@ -102,6 +102,14 @@ public class FileTool {
     boolean is_valid = path_format.matcher(pathname).matches();
     return is_valid;
   }
+
+  // 列出当前目录所有文件&文件夹, 传入一个File对象'指定路径'
+  public static String list_files_and_folders(File pathname){
+    String[] output = pathname.list();
+    return Arrays.toString(output);
+  }
+
+  /* ---------------------------------分割线----------------------------------------- */
 
   // 1. 创建文件 并 写入数据
   public static void create_File() {
@@ -219,6 +227,29 @@ public class FileTool {
     
   }
 
+  // 6. 删除空文件夹 ()
+  public static void delete_Empty_Folder(){
+    System.out.println("欢迎来到删除'空文件夹'");
+    Scanner user_input = new Scanner(System.in);
+    System.out.print("请先输入要前往的路径, 当前位于Self_Exercise目录下, 如/folder_a(回车直接确定为'当前目录'): ");
+    String valid_path = user_input.nextLine();
+    File go_to_path = new File(default_path, valid_path);
+    boolean is_pathname_valid = FileTool.validate_pathname(valid_path);
+    boolean is_path_exists = go_to_path.exists();
+    while (!is_pathname_valid || !is_path_exists) {
+      System.out.print("输入的路径名非法或不存在, 请重新输入: ");
+      valid_path = user_input.nextLine();
+      is_pathname_valid = FileTool.validate_pathname(valid_path);
+      go_to_path = new File(default_path, valid_path);
+      is_path_exists = go_to_path.exists();
+    }
+    System.out.println("\n输入的路径合法且存在!");
+    
+
+    String file_and_folders = FileTool.list_files_and_folders(go_to_path);
+    System.out.println("前往的目录"+default_path+valid_path+"中有: \n" + file_and_folders);
+  }
+
   // 主函数
   public static void main(String[] args) throws IOException {
     String directory = "Java_Reboot/File_IO_Experiment/Self_Exercise";
@@ -275,7 +306,7 @@ public class FileTool {
         FileTool.create_Folder();
         break;
       case "6":
-
+        FileTool.delete_Empty_Folder();
         break;
       case "7":
 
@@ -285,7 +316,7 @@ public class FileTool {
 
         break;
       case "9":
-
+        
         break;
 
       case "0":
