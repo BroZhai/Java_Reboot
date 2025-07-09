@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 // 获取标准输入流
 import java.util.Scanner;
@@ -103,11 +104,25 @@ public class FileTool {
     return is_valid;
   }
 
-  // 列出当前目录所有文件&文件夹, 传入一个File对象'指定路径'
-  public static String list_files_and_folders(File pathname){
-    String[] output = pathname.list();
-    return Arrays.toString(output);
+  // 列出当前目录所有文件&文件夹, 传入一个File对象'指定路径', 第一个布尔'只列文件', 第二个布尔'只列文件夹', 两个都true直接全部返回
+  public static String list_files_and_folders(File pathname, boolean list_files, boolean list_folders){
+    if(!list_files&&!list_folders){
+      System.out.println("哦呀? 你想干什么?");
+      System.exit(0);
+    }
+    ArrayList<String> final_output = new ArrayList<>();
+    File[] files_and_folders = pathname.listFiles();
+    for(File i: files_and_folders){
+      if(list_files && i.isFile()){ // 追加文件
+        final_output.add(i.getName());
+      }
+      if(list_folders && i.isDirectory()){ // 追加文件夹
+        final_output.add(i.getName());
+      }
+    }
+    return final_output.toString();
   }
+
 
   /* ---------------------------------分割线----------------------------------------- */
 
@@ -231,23 +246,58 @@ public class FileTool {
   public static void delete_Empty_Folder(){
     System.out.println("欢迎来到删除'空文件夹'");
     Scanner user_input = new Scanner(System.in);
-    System.out.print("请先输入要前往的路径, 当前位于Self_Exercise目录下, 如/folder_a(回车直接确定为'当前目录'): ");
+    System.out.println("当前位于Self_Exercise目录下");
+    File current_folder = new File(default_path);
+    System.out.println("可前往目录: " + FileTool.list_files_and_folders(current_folder, false, true));
+    System.out.print("请先输入要前往的目录, 如/folder_a: "); // 由于仅为实践, 这里只实现'前往一次' (在真正的实践中要反复的问用户'到哪里停下来'后再进指定操作)
     String valid_path = user_input.nextLine();
-    File go_to_path = new File(default_path, valid_path);
+    File go_to_path = new File(default_path+valid_path);
     boolean is_pathname_valid = FileTool.validate_pathname(valid_path);
     boolean is_path_exists = go_to_path.exists();
     while (!is_pathname_valid || !is_path_exists) {
-      System.out.print("输入的路径名非法或不存在, 请重新输入: ");
+      // System.out.print("输入的路径名非法或不存在, 请重新输入 (如 /folder_a): ");
+      if(!is_pathname_valid){
+        System.out.print("输入的文件夹的名称不合法, 请重新输入: ");
+      }else if(!is_path_exists){
+        System.out.print("找不到对应的文件夹, 请重新输入: ");
+      }
       valid_path = user_input.nextLine();
       is_pathname_valid = FileTool.validate_pathname(valid_path);
-      go_to_path = new File(default_path, valid_path);
+      go_to_path = new File(default_path+valid_path);
       is_path_exists = go_to_path.exists();
     }
     System.out.println("\n输入的路径合法且存在!");
     
 
-    String file_and_folders = FileTool.list_files_and_folders(go_to_path);
-    System.out.println("前往的目录"+default_path+valid_path+"中有: \n" + file_and_folders);
+    String file_and_folders = FileTool.list_files_and_folders(go_to_path,false,true);
+    System.out.println("前往的目录"+default_path+valid_path+"中有如下文件夹: \n" + file_and_folders);
+    System.out.print("请输入要想删除的文件夹名称(如 /folder_a, 注意斜杠): ");
+    String folder_name = user_input.nextLine(); // 获取'文件夹名'
+    File target_folder = new File(go_to_path+folder_name); 
+    // System.out.println("当前tgt_folder的路径': "+ target_folder.getPath());
+    // System.out.println("default path: " + default_path + ", folder_name: " + folder_name);
+    is_pathname_valid = FileTool.validate_pathname(folder_name); // 路径名合法校验
+    is_path_exists = target_folder.exists(); // 路径存在性校验
+    while (!is_pathname_valid || !is_path_exists) {
+      // System.out.print("输入的路径名非法或不存在, 请重新输入 (如 /folder_a): ");
+      if(!is_pathname_valid){
+        System.out.print("输入的文件夹的名称不合法, 请重新输入: ");
+      }else if(!is_path_exists){
+        System.out.print("找不到对应的文件夹, 请重新输入: ");
+      }
+      // System.out.println("路径合法吗: " + is_pathname_valid + ", 路径存在吗: " + is_path_exists);
+      // System.out.println("target_folder名称 " + target_folder.getName() + ", target_folder路径 " + target_folder.getPath()); // 调试用
+      folder_name = user_input.nextLine();
+      is_pathname_valid = FileTool.validate_pathname(folder_name);
+      target_folder = new File(go_to_path+folder_name);
+      is_path_exists = target_folder.exists();
+    }
+    if(target_folder.delete()){
+      System.out.println("成功删除了 " + target_folder.getPath());
+    }else{
+      System.out.println("未能删除 " + target_folder.getName() +", 可能是文件夹中仍有文件 ...");
+    }
+
   }
 
   // 主函数
