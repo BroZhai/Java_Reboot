@@ -1,10 +1,14 @@
 package Java_Reboot.FIle_IO_Experiment.Self_Exercise;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 // 文件IO相关
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,47 +60,96 @@ public class FileTool {
     return legal_filename;
   }
 
-  // 写入内容到文件 传入File对象, 是否'追加写入'boolean
-  public static boolean write_file(File target_file, boolean append) {
-    if (append) {
-      System.out.println("\n即将对文件进行'覆盖'写入");
-    } else {
-      System.out.println("\n本次对文件'追加'写入");
-    }
-    try {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(target_file, !append));
-      Scanner content = new Scanner(System.in);
-      String input_content;
-      boolean continue_write = true;
-      int line_counter = 1;
-      Pattern end_format = Pattern.compile("^.*/end$");
-      boolean end_judge;
-      System.out.println("注: 输中文有bug, 字符编码的问题, 这里懒得搞了 XD");
-      while (continue_write) {
-        System.out.print("请书写第 " + line_counter + " 行的内容, 输入/end退出: ");
-        input_content = content.nextLine();
-        end_judge = end_format.matcher(input_content).matches(); // 匹配到/end, 说明用户不想输入了
-        if (end_judge) {
-          input_content = end_format.matcher(input_content).replaceAll(""); // 将/end 替换成空格; (考虑到用户可能会在单行输入 /end)
-          writer.write(input_content);
-          System.out.println("已终止输入");
-          // content.close(); // 小心关掉全局System.in
-          break;
-        } else {
-          writer.write(input_content);
-          writer.newLine();
-          line_counter++;
-        }
-      } // 循环写入结束
-      writer.flush();
-      writer.close();
+  // 写入内容到文件 传入File对象 or 复制文件, 是否'追加写入'boolean, copy参数表示是否'赋值文件'
+  public static boolean write_file(File target_file, boolean append, boolean copy) {
+    Scanner content = new Scanner(System.in);
+    if (copy) {
+      System.out.println("\n本次操作为'复制文件', 请按照下方提示指定输出位置");
+      File output_path = FileTool.comfirm_path();
+      System.out.print("请输入'输出文件名': " );
+      String output_filename = content.nextLine();
+      boolean valid_filename = FileTool.validate_filename(output_filename);
+      while(!valid_filename){
+        System.out.println("输出文件名不合法, 请重试: ");
+        output_filename = content.nextLine();
+        valid_filename = FileTool.validate_filename(output_filename);
+      }
+      File output_file = new File(output_path.getPath(), output_filename);
+      try {
+        if(output_file.createNewFile()){
+          System.out.println("成功创建输出文件'容器', 正在往内部写入内容...");
+          System.out.println("(考虑到兼容性需求, 这里将一切输入源视为'字节输入', 任何文件都可以复制)");
+          int uni_size = 16384; // 定义缓存的统一大小
+          BufferedInputStream reader = new BufferedInputStream(new FileInputStream(target_file),uni_size); // 从输入文件中'获取内容', 硬盘读取缓存16384
+          int file_size = reader.available();
+          byte[] read_buffer = new byte[uni_size]; // 内存缓存16384 Byte
+          byte[] storage = new byte[file_size]; // 最终存储数据的地方
+          int read_counter = 1;
+          int read_bytes;
+          while((read_bytes = reader.read(read_buffer)) !=-1){ // 没有读到文件最后, 将当前的数据读到'内存缓冲区'中
+            // System.out.println("当前从'内存缓冲区'中读了: " + read_bytes + "这是第"+read_counter+"次读取");
+            System.arraycopy(read_buffer, 0, storage, (read_counter-1)*uni_size, read_bytes); // 缓存 移到 储存, 每次16384 Bytes
+            read_counter++;
+          } // 使用缓存机制完成了对源文件的读取
+          // reader.read(input_content);
 
-    } catch (IOException e) {
-      System.out.println("在写入文件 " + target_file.getName() + " 时发生了IO读写异常...");
+          BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(output_file), 16384); // 输出文件,操作同上, 但无需设置'内存缓存'
+          writer.write(storage);
+          writer.flush();
+          writer.close();
+          
+          return true;
+        }else{
+          System.out.println("创建'输出文件'时发生了问题, 可能是文件名重复");
+        }
+      } catch (IOException e) {
+        System.out.println("读写文件时发生了IO异常, 程序已自行退出...");
+        System.exit(1);
+      }
+      
+      return true;
+    }
+    else{
+      if (append) {
+        System.out.println("\n即将对文件进行'覆盖'写入");
+      } else {
+        System.out.println("\n本次对文件'追加'写入");
+      }
+      try {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(target_file, !append));
+        String input_content;
+        boolean continue_write = true;
+        int line_counter = 1;
+        Pattern end_format = Pattern.compile("^.*/end$");
+        boolean end_judge;
+        System.out.println("注: 输中文有bug, 字符编码的问题, 这里懒得搞了 XD");
+        while (continue_write) {
+          System.out.print("请书写第 " + line_counter + " 行的内容, 输入/end退出: ");
+          input_content = content.nextLine();
+          end_judge = end_format.matcher(input_content).matches(); // 匹配到/end, 说明用户不想输入了
+          if (end_judge) {
+            input_content = end_format.matcher(input_content).replaceAll(""); // 将/end 替换成空格; (考虑到用户可能会在单行输入 /end)
+            writer.write(input_content);
+            System.out.println("已终止输入");
+            // content.close(); // 小心关掉全局System.in
+            break;
+          } else {
+            writer.write(input_content);
+            writer.newLine();
+            line_counter++;
+          }
+        } // 循环写入结束
+        writer.flush();
+        writer.close();
+        System.out.println("成功往文件 " + target_file.getName() + " 中写入了内容!");
+
+      } catch (IOException e) {
+        System.out.println("在写入文件 " + target_file.getName() + " 时发生了IO读写异常...");
+        return false;
+      }
+      
       return false;
     }
-    System.out.println("成功往文件 " + target_file.getName() + " 中写入了内容!");
-    return true;
   }
 
   // 校验'路径名'是否合法
@@ -224,7 +277,7 @@ public class FileTool {
         // char[] want_append = answer.toCharArray();
         // boolean append_judge = (want_append[0] == 'Y') || (want_append[0] == 'y');
         boolean append_judge = FileTool.get_yes_no(answer);
-        FileTool.write_file(output_file, append_judge);
+        FileTool.write_file(output_file, append_judge, false); // 直接写入
       }
     } else {
       try { // 没有找到同名文件, 直接创建新文件
@@ -240,7 +293,7 @@ public class FileTool {
         }
         boolean write_or_not = FileTool.get_yes_no(answer);
         if (write_or_not) {
-          FileTool.write_file(output_file, write_or_not); // 直接书写(覆盖)
+          FileTool.write_file(output_file, write_or_not, false); // 直接书写(覆盖), 没有copy
         } else {
           System.out.println("没有往 " + output_file.getName() + " 写入任何信息, 当前为一个空文件");
         }
@@ -261,22 +314,34 @@ public class FileTool {
 
     String files = FileTool.list_files_and_folders(confirmed_path, true, false);
     System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + files);
-    System.out.print("请输入要想删除的文件名称(记得带.后缀): ");
+    System.out.print("请输入想要复制的文件名称(记得带.后缀): ");
     Scanner user_input = new Scanner(System.in);
-    String filename = user_input.nextLine(); // 获取'文件名'
+    String filename = user_input.nextLine(); // 获取'输入文件'名
+    File target_file = new File(confirmed_path.getPath(),filename);
     boolean is_valid_filename = FileTool.validate_filename(filename);
-    while(!is_valid_filename) {
-      System.out.println("输入的文件名无效, 请重试: ");
+    boolean is_file_exists = target_file.exists();
+    while(!is_valid_filename || !is_file_exists) {
+      if(!is_valid_filename){
+        System.out.print("输入的文件名不合法, 请重试: ");
+      }
+      if(!is_file_exists){
+        System.out.print("找不到对应的文件, 请重试: ");
+      }
       filename = user_input.nextLine();
       is_valid_filename = FileTool.validate_filename(filename);
+      target_file = new File(confirmed_path.getPath(),filename);
+      is_file_exists = target_file.exists();
     }
-    //成功校验了输入的文件名的合法性
-    File target_file = new File(confirmed_path.getPath(),filename); // 指定路径 拼接 指定路径下的'文件'
-    boolean is_file_exists = target_file.exists();
-    if(!is_file_exists){
-      System.out.println("输入的文件不存在, 你想要创建一个吗?");
-      System.exit(0);
+    //成功校验了输入的文件名的合法性 & 存在性
+    // target_file = new File()
+    System.out.println("找到输入文件: " + target_file.getName() + ", 路径位于: " + target_file.getPath());
+    boolean copy_result = FileTool.write_file(target_file, false, true);
+    if(copy_result){
+      System.out.println("\n文件复制操作成功!!");
+    }else{
+      System.out.println("复制文件操作发生了问题...");
     }
+
   }
 
   // 5. 新建文件夹
@@ -443,7 +508,7 @@ public class FileTool {
         break;
 
       case "2":
-
+        FileTool.copy_File();
         break;
       case "3":
 
