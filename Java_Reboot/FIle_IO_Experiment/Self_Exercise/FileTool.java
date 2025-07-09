@@ -151,13 +151,14 @@ public class FileTool {
     return false;
   }
 
-  // 确认输入路径, 返回"对应路径"的File对象 (后来加的封装)
+  // 确认输入路径, 返回"对应操作路径"的File对象 (后来加的封装)
   public static File comfirm_path(){
     Scanner user_input = new Scanner(System.in);
-    System.out.println("当前位于Self_Exercise目录下");
+    System.out.println("\n请确认操作路径");
     File current_folder = new File(default_path); // 默认目录, 准备被列出所有内容
+    System.out.println("当前目录位于: "+ current_folder.getPath());
     System.out.println("可前往目录: " + FileTool.list_files_and_folders(current_folder, false, true));
-    System.out.print("请先输入要前往的目录, 如/folder_a (如要进入当前目录Self_Exercise, 直接回车即可): ");
+    System.out.print("请指定要进行操作的路径, 如前往当前目录下的'/folder_a'作为操作路径 (如要指定当前目录Self_Exercise, 直接回车即可): ");
     String valid_path = user_input.nextLine();
     File go_to_path;
     boolean is_pathname_valid, is_path_exists;
@@ -192,8 +193,8 @@ public class FileTool {
   // 1. 创建文件 并 写入数据
   public static void create_File() {
     System.out.println("\n欢迎来到'文件创建' (这里仅为创建'字符文件' Structured Data owo)");
-    
-
+    File confirmed_path = FileTool.comfirm_path();
+    System.out.println("\n已确认当前的操作路径为: " + confirmed_path.getPath());
 
     System.out.print("请输入文件名: ");
     Scanner user_input = new Scanner(System.in);
@@ -207,7 +208,7 @@ public class FileTool {
     }
     System.out.println("文件名合法性校验成功!");
 
-    File output_file = new File(default_path, filename);
+    File output_file = new File(confirmed_path.getPath(), filename);
     if (output_file.exists()) {
       System.out.print("检测到当前目录中已有同名文件, 是否继续进行覆盖写入? [Y/N]: ");
       String answer = user_input.nextLine();
@@ -229,7 +230,7 @@ public class FileTool {
       try { // 没有找到同名文件, 直接创建新文件
         output_file.createNewFile();
         // output_file.deleteOnExit();
-        System.out.print("文件现已成功创建至默认目录" + default_path + "下\n你想往其中写入字符内容吗? [Y/N]: ");
+        System.out.print("\n文件现已成功创建至默认目录" + confirmed_path.getPath() + "下\n你想往其中写入字符内容吗? [Y/N]: ");
         String answer = user_input.nextLine();
         boolean valid_input = FileTool.validate_yes_no(answer);
         while (!valid_input) {
@@ -247,9 +248,7 @@ public class FileTool {
         System.out.println("修改文件 " + output_file.getName() + " 时发生了IOException异常, 程序已自行退出");
         System.exit(0);
       }
-
       System.out.println();
-
     }
     user_input.close();
   }
@@ -283,32 +282,35 @@ public class FileTool {
   // 5. 新建文件夹
   public static void create_Folder() {
     System.out.println("欢迎来到创建文件夹");
+    File confirmed_path = FileTool.comfirm_path();
+    System.out.println("已确认操作路径为: " + confirmed_path.getPath());
+
     System.out.print("请问是否要创建多级目录? [Y/N]: ");
     Scanner user_input = new Scanner(System.in);
     String input_content = user_input.nextLine();
-    String path; // 真正获取到的'合法路径'输入 (这里暂时声明, 一会而取到合法路径就赋值)
+    String path; // 用户自定义的'文件夹' (这里暂时声明, 一会而取到合法路径就赋值)
     boolean validate_yes_no = FileTool.validate_yes_no(input_content);
     while (!validate_yes_no) { // Yes No 合法判断
       System.out.print("输入无效, 请重试: ");
       input_content = user_input.nextLine();
       validate_yes_no = FileTool.validate_yes_no(input_content);
     }
-    boolean is_multiple = FileTool.get_yes_no(input_content);
+    boolean is_multiple = FileTool.get_yes_no(input_content); // 取得Yes No 操作
     if (is_multiple) { // 多级目录
       System.out.println("\n用户选择了创建'多级目录'");
       System.out.print("请输入多级目录路径 (/folder_A/folder_B/...): ");
       path = user_input.nextLine();
-      boolean valid_path = FileTool.validate_pathname(path);
-      while (!valid_path) {
+      boolean valid_path = FileTool.validate_pathname(path); // 用户输入'自定义文件名'的 合法性 判断 
+      while (!valid_path) { 
         System.out.print("输入的文件路径不合法! 请重新输入 (/folder_A/folder_B/...): ");
         path = user_input.nextLine();
         valid_path = FileTool.validate_pathname(path);
       }
       System.out.println("输入的文件路径 " + path + " 合法!");
-      File multi_path = new File(default_path + path);
+      File multi_path = new File(confirmed_path.getPath() + path);
 
       if (multi_path.mkdirs()) {
-        System.out.println("成功在创建了多级目录 " + default_path + path);
+        System.out.println("成功在创建了多级目录 " + confirmed_path.getPath() + path);
       } else {
         System.out.println("创建多级目录失败, 可能目录已存在...");
       }
@@ -324,9 +326,9 @@ public class FileTool {
         valid_path = FileTool.validate_pathname(path);
       }
       System.out.println("输入文件夹名称 " + path + "合法!");
-      File single_path = new File(default_path, path);
+      File single_path = new File(confirmed_path.getPath(), path);
       if (single_path.mkdir()) {
-        System.out.println("成功创建单级目录: " + default_path + path);
+        System.out.println("成功创建单级目录: " + confirmed_path.getPath() + path);
       } else {
         System.out.println("创建单级目录失败, 可能目录已存在 或 输入了多级目录...");
       }
@@ -368,9 +370,9 @@ public class FileTool {
       is_path_exists = target_folder.exists();
     }
     if (target_folder.delete()) {
-      System.out.println("成功删除了 " + target_folder.getPath());
+      System.out.println("成功删除了空目录 " + target_folder.getPath());
     } else { // 删除'有内容'的文件夹追加到这里了
-      System.out.println("检测到" + target_folder.getName() + "文件夹中仍有文件 ...");
+      System.out.println("检测到" + target_folder.getName() + "文件夹中仍有文件/文件夹 ...");
       System.out.print("您想要完全删除它吗? [Y/N]: ");
       String confirmation = user_input.nextLine();
       boolean valid_input = FileTool.validate_yes_no(confirmation);
@@ -381,7 +383,7 @@ public class FileTool {
       }
       boolean continue_delete = FileTool.get_yes_no(confirmation);
       if (continue_delete) {
-        System.out.println("用户选择了继续删除");
+        System.out.println("\n用户选择了继续删除");
         File[] files_in_target_folder = target_folder.listFiles();
         for (File i : files_in_target_folder) {
           FileTool.delete_files_or_folders(i); // 移除了'有内容'文件夹中的所有文件 (如果里面仍有'有内容'的文件夹不保证能移除)
