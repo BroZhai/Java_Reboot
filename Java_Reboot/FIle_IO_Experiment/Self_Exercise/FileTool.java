@@ -123,6 +123,14 @@ public class FileTool {
     return final_output.toString();
   }
 
+  // 单独写一个文件 / 文件夹删除方法
+  public static boolean delete_files_and_folders(File file, boolean list_files, boolean list_folders){
+    if(!file.exists()){
+      System.out.println("文件/文件夹不存在");
+    }
+    return false;
+  }
+
 
   /* ---------------------------------分割线----------------------------------------- */
 
@@ -242,9 +250,9 @@ public class FileTool {
     
   }
 
-  // 6. 删除空文件夹 ()
+  // 6. 删除文件夹 (包含 空文件夹 和 有内容的文件夹)
   public static void delete_Empty_Folder(){
-    System.out.println("欢迎来到删除'空文件夹'");
+    System.out.println("欢迎来到删除'文件夹'");
     Scanner user_input = new Scanner(System.in);
     System.out.println("当前位于Self_Exercise目录下");
     File current_folder = new File(default_path);
@@ -294,13 +302,33 @@ public class FileTool {
     }
     if(target_folder.delete()){
       System.out.println("成功删除了 " + target_folder.getPath());
-    }else{
+    }else{ // 删除'有内容'的文件夹追加到这里了
       System.out.println("未能删除 " + target_folder.getName() +", 可能是文件夹中仍有文件 ...");
+      System.out.print("您仍想要删除它吗? [Y/N]: ");
+      String confirmation = user_input.nextLine();
+      boolean valid_input = FileTool.validate_yes_no(confirmation);
+      while(!valid_input) {
+        System.out.println("输入无效, 请重新输入[Y/N]: ");
+        confirmation = user_input.nextLine();
+        valid_input = FileTool.validate_yes_no(confirmation);
+      }
+      boolean continue_delete = FileTool.get_yes_no(confirmation);
+      if(continue_delete){
+        System.out.println("用户选择了继续删除");
+        File[] files_in_target_folder = target_folder.listFiles();
+        for(File i : files_in_target_folder){
+
+        }
+      }
+      else{
+        System.out.println("没有删除 " + target_folder.getName());
+      }
     }
 
   }
 
-  // 主函数
+
+  // 主函数 (这里调用类中的方法要用确保是 '类'的静态方法, FileTool.xxx(), 上面的方法处于'同一级'就不用, 但是要用也行, 统一规范)
   public static void main(String[] args) throws IOException {
     String directory = "Java_Reboot/File_IO_Experiment/Self_Exercise";
     File welcome_text = new File(directory, "welcome.txt");
