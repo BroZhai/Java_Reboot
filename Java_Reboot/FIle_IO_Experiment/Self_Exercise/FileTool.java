@@ -239,6 +239,35 @@ public class FileTool {
   
   }
 
+  // 确定'指定文件', 返回FIle对象 (需要传入上面的'返回路径'(一个确定合法且存在的路径), 单独拆开来灵活运用)
+  public static File comfirm_File(File confirmed_path){
+    // System.out.print("请输入想要执行操作的文件名称(记得带.后缀): ");
+    Scanner user_input = new Scanner(System.in);
+    String filename = user_input.nextLine(); // 获取'输入文件'名
+    File target_file = new File(confirmed_path.getPath(),filename);
+    boolean is_valid_filename = FileTool.validate_filename(filename);
+    boolean is_file_exists = target_file.exists();
+    boolean is_directory = target_file.isDirectory();
+    while(!is_valid_filename || !is_file_exists || is_directory) {
+      if(!is_valid_filename){
+        System.out.print("输入的文件名不合法, 请重试: ");
+      }
+      if(!is_file_exists){
+        System.out.print("找不到对应的文件, 请重试: ");
+      }
+      if(is_directory){
+        System.out.print("您输入的是一个路径, 给我重来!!: ");
+      }
+      filename = user_input.nextLine();
+      is_valid_filename = FileTool.validate_filename(filename);
+      target_file = new File(confirmed_path.getPath(),filename);
+      is_file_exists = target_file.exists();
+      is_directory = target_file.isDirectory();
+    }
+    // 所有校验通过, 返回File文件对象
+    return target_file;
+  }
+
   /*
    * ---------------------------------分割线-----------------------------------------
    */
@@ -315,25 +344,9 @@ public class FileTool {
     String files = FileTool.list_files_and_folders(confirmed_path, true, false);
     System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + files);
     System.out.print("请输入想要复制的文件名称(记得带.后缀): ");
-    Scanner user_input = new Scanner(System.in);
-    String filename = user_input.nextLine(); // 获取'输入文件'名
-    File target_file = new File(confirmed_path.getPath(),filename);
-    boolean is_valid_filename = FileTool.validate_filename(filename);
-    boolean is_file_exists = target_file.exists();
-    while(!is_valid_filename || !is_file_exists) {
-      if(!is_valid_filename){
-        System.out.print("输入的文件名不合法, 请重试: ");
-      }
-      if(!is_file_exists){
-        System.out.print("找不到对应的文件, 请重试: ");
-      }
-      filename = user_input.nextLine();
-      is_valid_filename = FileTool.validate_filename(filename);
-      target_file = new File(confirmed_path.getPath(),filename);
-      is_file_exists = target_file.exists();
-    }
+    File target_file = FileTool.comfirm_File(confirmed_path);
+
     //成功校验了输入的文件名的合法性 & 存在性
-    // target_file = new File()
     System.out.println("找到输入文件: " + target_file.getName() + ", 路径位于: " + target_file.getPath());
     boolean copy_result = FileTool.write_file(target_file, false, true);
     if(copy_result){
@@ -348,34 +361,15 @@ public class FileTool {
   public static void delete_Files(){
     System.out.println("欢迎来到'删除文件'");
     File confirmed_path = FileTool.comfirm_path();
-    System.out.println("已确认操作路径为: " + confirmed_path.getPath());
+    System.out.println("\n已确认操作路径为: " + confirmed_path.getPath());
     String files = FileTool.list_files_and_folders(confirmed_path, true, false);
     System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + files);
-    System.out.print("请输入想要复删除的文件名称(记得带.后缀): ");
-    Scanner user_input = new Scanner(System.in);
-    String filename = user_input.nextLine(); // 获取'输入文件'名
-    File target_file = new File(confirmed_path.getPath(),filename);
-    boolean is_valid_filename = FileTool.validate_filename(filename);
-    boolean is_file_exists = target_file.exists();
-    boolean is_directory = target_file.isDirectory();
-    while(!is_valid_filename || !is_file_exists || is_directory) {
-      if(!is_valid_filename){
-        System.out.print("输入的文件名不合法, 请重试: ");
-      }
-      if(!is_file_exists){
-        System.out.print("找不到对应的文件, 请重试: ");
-      }
-      if(is_directory){
-        System.out.print("您输入的是一个路径, 给我重来: ");
-      }
-      filename = user_input.nextLine();
-      is_valid_filename = FileTool.validate_filename(filename);
-      target_file = new File(confirmed_path.getPath(),filename);
-      is_file_exists = target_file.exists();
-      is_directory = target_file.isDirectory();
-    }
+    System.out.print("请输入想复删除的文件名称(记得带.后缀): ");
+    File target_file = FileTool.comfirm_File(confirmed_path);
+
     System.out.println("\n找到输入文件: " + target_file.getName() + ", 路径位于: " + target_file.getPath());
     System.out.print("你确定要删除文件 " + target_file.getName() + " 吗? [Y/N]: ");
+    Scanner user_input = new Scanner(System.in);
     String confirmation = user_input.nextLine();
     boolean is_valid_input = FileTool.validate_yes_no(confirmation);
     while(!is_valid_input){
@@ -392,6 +386,13 @@ public class FileTool {
     }else{
       System.out.println("用户取消了删除文件...");
     }
+  }
+
+  // 4. 移动/重命名文件
+  public static void rename_Or_Move_File(){
+    System.out.println("欢迎来到移动/重命名文件");
+    File confirmed_path = FileTool.comfirm_path();
+    System.out.println("已确认操作路径为: " + confirmed_path.getPath());
   }
 
   // 5. 新建文件夹
