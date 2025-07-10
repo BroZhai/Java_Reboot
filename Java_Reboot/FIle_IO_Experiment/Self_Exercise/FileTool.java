@@ -255,10 +255,10 @@ public class FileTool {
       if(!is_valid_filename){
         System.out.print("输入的文件名不合法, 请重试: ");
       }
-      if(!is_file_exists){
+      else if(!is_file_exists){
         System.out.print("找不到对应的文件, 请重试: ");
       }
-      if(is_directory){
+      else if(is_directory){
         System.out.print("您输入的是一个路径, 给我重来!!: ");
       }
       filename = user_input.nextLine();
@@ -269,6 +269,26 @@ public class FileTool {
     }
     // 所有校验通过, 返回File文件对象
     return target_file;
+  }
+
+  // 取得某个File目录中的所有文件后缀, 返回ArrayList<String> 用于后续校验
+  public static ArrayList<String> get_file_suffixs(File path){
+    File[] files_in_path = path.listFiles();
+    ArrayList<String> suffix_sets = new ArrayList<>(); // 后缀集合
+    for(File i : files_in_path){
+      if(i.isDirectory()){ // 滤除当前读到的'目录', 只读文件
+        continue;
+      }
+      // 读到的是文件
+      String filename = i.getName();
+      int dot_index = filename.indexOf(".");
+      String file_suffix = filename.substring(dot_index); // 读取文件 ".后缀"
+      if(suffix_sets.contains(file_suffix)){
+        continue; // 文件后缀已在'后缀集合'中存在, 不进行重新写入
+      }
+      suffix_sets.add(file_suffix);
+    }
+    return suffix_sets;
   }
 
   /*
@@ -576,21 +596,44 @@ public class FileTool {
     System.out.println("默认对文件的命名规范是: '自定义统一文件名'-升序数字.后缀 ");
     File confirmed_path = FileTool.comfirm_path(); // 确认路径
     System.out.println("\n输入的路径合法且存在!");
-    
-    String file_and_folders = FileTool.list_files_and_folders(confirmed_path, true, false);
-    System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + file_and_folders);
+    ArrayList<String> suffix_sets = FileTool.get_file_suffixs(confirmed_path);
+    // ArrayList<String> suffix_sets = new ArrayList<>(); // 后缀集合
+    // File[] files_in_path = confirmed_path.listFiles();
+    // for(File i : files_in_path){
+    //   if(i.isDirectory()){ // 滤除当前读到的'目录', 只读文件
+    //     continue;
+    //   }
+    //   // 读到的是文件
+    //   String filename = i.getName();
+    //   int dot_index = filename.indexOf(".");
+    //   String file_suffix = filename.substring(dot_index); // 读取文件 ".后缀"
+    //   if(suffix_sets.contains(file_suffix)){
+    //     continue; // 文件后缀已在'后缀集合'中存在, 不进行重新写入
+    //   }
+    //   suffix_sets.add(file_suffix);
+    // }
+    // String file_and_folders = FileTool.list_files_and_folders(confirmed_path, true, false);
+    System.out.println("前往的目录" + confirmed_path.getPath() + "中有以下的文件后缀: \n" + suffix_sets.toString());
     // System.out.println();
+    
     System.out.print("\n请输入要筛选的文件后缀: ");
     Scanner user_input = new Scanner(System.in);
-    String file_suffix = user_input.nextLine();
+    String input_suffix = user_input.nextLine();
     Pattern suffix_standard = Pattern.compile("\\.[a-zA-Z0-9]{3,4}");
-    Matcher suffix_matcher = suffix_standard.matcher(file_suffix);
+    Matcher suffix_matcher = suffix_standard.matcher(input_suffix);
     boolean valid_suffix = suffix_matcher.matches();
-    while (!valid_suffix) {
-      System.out.print("输入的后缀名不合法, 请重试: ");
-      file_suffix = user_input.nextLine();
-      valid_suffix = suffix_standard.matcher(file_suffix).matches();
+    boolean is_suffix_exists = suffix_sets.contains(input_suffix);
+    while (!valid_suffix || !is_suffix_exists ) {
+      if(!valid_suffix){
+        System.out.print("输入的后缀名不合法, 请重试: ");
+      }else if(!is_suffix_exists){
+        System.out.print("找不到对应的后缀, 请重试: ");
+      }
+      input_suffix = user_input.nextLine();
+      valid_suffix = suffix_standard.matcher(input_suffix).matches();
+      is_suffix_exists = suffix_sets.contains(input_suffix);
     }
+    System.out.println("本次选择的后缀名是: " + input_suffix);
     
   }
 
