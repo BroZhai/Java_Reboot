@@ -11,16 +11,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.channels.FileLockInterruptionException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 // 获取标准输入流
 import java.util.Scanner;
 
 // 正则表达式想换
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+// 导入其他自定义类
+import Java_Reboot.FIle_IO_Experiment.Self_Exercise.CustomFilter; // 实现的'文件过滤器'
 
 public class FileTool {
   // 在本Java中, 尝试来自行实现一下 文件/文件夹 相关的功能
@@ -290,6 +294,7 @@ public class FileTool {
     }
     return suffix_sets;
   }
+
 
   /*
    * ---------------------------------分割线-----------------------------------------
@@ -593,30 +598,15 @@ public class FileTool {
   public static void batch_Rename(){
     System.out.println("欢迎来到'批量重命名'");
     System.out.println("说明: 本功能依照'文件.后缀'对文件进行过滤, 针对'过滤好'的文件再进行统一操作");
-    System.out.println("默认对文件的命名规范是: '自定义统一文件名'-升序数字.后缀 ");
+    System.out.println("默认对文件的命名规范是: '自定义统一文件名'-升序数字.后缀, 如 pinkcandy-1.txt, pinkcandy-2.txt");
     File confirmed_path = FileTool.comfirm_path(); // 确认路径
     System.out.println("\n输入的路径合法且存在!");
     ArrayList<String> suffix_sets = FileTool.get_file_suffixs(confirmed_path);
-    // ArrayList<String> suffix_sets = new ArrayList<>(); // 后缀集合
-    // File[] files_in_path = confirmed_path.listFiles();
-    // for(File i : files_in_path){
-    //   if(i.isDirectory()){ // 滤除当前读到的'目录', 只读文件
-    //     continue;
-    //   }
-    //   // 读到的是文件
-    //   String filename = i.getName();
-    //   int dot_index = filename.indexOf(".");
-    //   String file_suffix = filename.substring(dot_index); // 读取文件 ".后缀"
-    //   if(suffix_sets.contains(file_suffix)){
-    //     continue; // 文件后缀已在'后缀集合'中存在, 不进行重新写入
-    //   }
-    //   suffix_sets.add(file_suffix);
-    // }
-    // String file_and_folders = FileTool.list_files_and_folders(confirmed_path, true, false);
+
     System.out.println("前往的目录" + confirmed_path.getPath() + "中有以下的文件后缀: \n" + suffix_sets.toString());
     // System.out.println();
     
-    System.out.print("\n请输入要筛选的文件后缀: ");
+    System.out.print("\n请输入要批量重命名的文件后缀: ");
     Scanner user_input = new Scanner(System.in);
     String input_suffix = user_input.nextLine();
     Pattern suffix_standard = Pattern.compile("\\.[a-zA-Z0-9]{3,4}");
@@ -633,8 +623,35 @@ public class FileTool {
       valid_suffix = suffix_standard.matcher(input_suffix).matches();
       is_suffix_exists = suffix_sets.contains(input_suffix);
     }
-    System.out.println("本次选择的后缀名是: " + input_suffix);
+    System.out.println("\n本次选择的后缀名是: " + input_suffix);
     
+    CustomFilter my_filter = new CustomFilter(input_suffix); // 根据输入的后缀名, 创建一个'自定义过滤器对象'
+    File[] files_arr = confirmed_path.listFiles(my_filter); // 使用上面自定义的 my_filter类 进行自定义过滤
+    ArrayList<String> filtered_list = new ArrayList<>(); 
+    for(File i : files_arr){
+      filtered_list.add(i.getName());
+    }
+    System.out.println("过滤后的文件结果为: " + filtered_list.toString());
+    System.out.print("请输入统一的文件命名: ");
+    String custom_name = user_input.nextLine();
+    boolean valid_filename = FileTool.validate_filename(custom_name);
+    while(!valid_filename){
+      System.out.print("输入的文件名不合法, 请重试: ");
+      custom_name = user_input.nextLine();
+      valid_filename = FileTool.validate_filename(custom_name);
+    }
+    int count=1;
+    for(File i:files_arr){
+      String old_name = i.getName();
+      File new_reference = new File(confirmed_path.getPath(), custom_name + "-" + count + input_suffix); // e.g. test-1.txt, test-2.txt ...
+      if(i.renameTo(new_reference)){
+        System.out.println("以成功将 " + old_name + " 重命名为: " + new_reference.getName());
+        count++;
+      }else{
+        System.out.println("重命名 " + old_name + " 时发生了异常, 未能成功, 可能是文件被占用...");
+      }
+      
+    }
   }
 
   // 主函数 (这里调用类中的方法要用确保是 '类'的静态方法, FileTool.xxx(), 上面的方法处于'同一级'就不用, 但是要用也行, 统一规范)
