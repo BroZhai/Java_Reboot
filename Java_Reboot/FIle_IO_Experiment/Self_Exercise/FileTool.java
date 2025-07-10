@@ -218,6 +218,9 @@ public class FileTool {
     String valid_path = user_input.nextLine();
     File go_to_path;
     boolean is_pathname_valid, is_path_exists;
+    // if(valid_path.contains(".exit")){
+    //   System.out.println("已终止操作");
+    // }
     if(valid_path.isEmpty()){
       go_to_path = new File(default_path); // 直接操作'当前目录'
       return go_to_path;
@@ -564,7 +567,31 @@ public class FileTool {
         System.out.println("没有删除 " + target_folder.getName());
       }
     }
+  }
 
+  // 7. 批量重命名
+  public static void batch_Rename(){
+    System.out.println("欢迎来到'批量重命名'");
+    System.out.println("说明: 本功能依照'文件.后缀'对文件进行过滤, 针对'过滤好'的文件再进行统一操作");
+    System.out.println("默认对文件的命名规范是: '自定义统一文件名'-升序数字.后缀 ");
+    File confirmed_path = FileTool.comfirm_path(); // 确认路径
+    System.out.println("\n输入的路径合法且存在!");
+    
+    String file_and_folders = FileTool.list_files_and_folders(confirmed_path, true, false);
+    System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + file_and_folders);
+    // System.out.println();
+    System.out.print("\n请输入要筛选的文件后缀: ");
+    Scanner user_input = new Scanner(System.in);
+    String file_suffix = user_input.nextLine();
+    Pattern suffix_standard = Pattern.compile("\\.[a-zA-Z0-9]{3,4}");
+    Matcher suffix_matcher = suffix_standard.matcher(file_suffix);
+    boolean valid_suffix = suffix_matcher.matches();
+    while (!valid_suffix) {
+      System.out.print("输入的后缀名不合法, 请重试: ");
+      file_suffix = user_input.nextLine();
+      valid_suffix = suffix_standard.matcher(file_suffix).matches();
+    }
+    
   }
 
   // 主函数 (这里调用类中的方法要用确保是 '类'的静态方法, FileTool.xxx(), 上面的方法处于'同一级'就不用, 但是要用也行, 统一规范)
@@ -627,7 +654,7 @@ public class FileTool {
         FileTool.delete_Empty_Folder();
         break;
       case "7":
-        
+        FileTool.batch_Rename();
         break;
 
       case "8":
