@@ -1,20 +1,15 @@
 package Java_Reboot.FIle_IO_Experiment.Self_Exercise;
 
+// 文件IO相关
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-// 文件IO相关
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 // 获取标准输入流
 import java.util.Scanner;
@@ -23,7 +18,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// 导入其他自定义类
+// 导入其他自定义类 (草, 突然意识到可以直接用, 它俩位于同一个包下 XD)
 import Java_Reboot.FIle_IO_Experiment.Self_Exercise.CustomFilter; // 实现的'文件过滤器'
 
 public class FileTool {
@@ -64,7 +59,7 @@ public class FileTool {
     return legal_filename;
   }
 
-  // 写入内容到文件 传入File对象 or 复制文件, 是否'追加写入'boolean, copy参数表示是否'赋值文件'
+  // 写入内容到文件 传入File对象 or 复制文件, 是否'追加写入'boolean, copy参数表示是否'复制文件'
   public static boolean write_file(File target_file, boolean append, boolean copy) {
     Scanner content = new Scanner(System.in);
     if (copy) {
@@ -158,7 +153,7 @@ public class FileTool {
 
   // 校验'路径名'是否合法
   public static boolean validate_pathname(String pathname) {
-    Pattern path_format = Pattern.compile("^(/[0-9a-zA-Z_]+)+$"); // 这个就写简单点了, 不搞的太复杂
+    Pattern path_format = Pattern.compile("^(/[0-9a-zA-Z_.]+)+$"); // 这个就写简单点了, 不搞的太复杂
     boolean is_valid = path_format.matcher(pathname).matches();
     return is_valid;
   }
@@ -185,7 +180,7 @@ public class FileTool {
   // 单独整一个文件 / 文件夹删除方法, 传入File对象, 看要删文件 还是 文件夹
   public static boolean delete_files_or_folders(File file, boolean fileonly) {
     if (!file.exists()) { // 一般来说不会触发, 前面做足了'检查'的话
-      System.out.println("文件/文件夹不存在");
+      System.out.println("文件/文件夹不存在, 程序已自行中断...");
       System.exit(1);
     }
     if(fileonly){ // 本次方法'只删文件'
@@ -246,7 +241,7 @@ public class FileTool {
   
   }
 
-  // 确定'指定文件', 返回FIle对象 (需要传入上面的'返回路径'(一个确定合法且存在的路径), 单独拆开来灵活运用)
+  // 确定'指定文件', 返回File对象 (需要传入上面的'返回路径'(一个确定合法且存在的路径), 单独拆开来灵活运用)
   public static File confirm_file(File confirmed_path){
     // System.out.print("请输入想要执行操作的文件名称(记得带.后缀): ");
     Scanner user_input = new Scanner(System.in);
@@ -355,7 +350,7 @@ public class FileTool {
           System.out.println("没有往 " + output_file.getName() + " 写入任何信息, 当前为一个空文件");
         }
       } catch (IOException e) {
-        System.out.println("修改文件 " + output_file.getName() + " 时发生了IOException异常, 程序已自行退出");
+        System.out.println("修改文件 " + output_file.getName() + " 时发生了IOException异常, 程序已自行退出...");
         System.exit(0);
       }
       System.out.println();
@@ -532,7 +527,7 @@ public class FileTool {
 
   // 6. 删除文件夹 (包含 空文件夹 和 有内容的文件夹)
   public static void delete_Empty_Folder() {
-    System.out.println("欢迎来到删除'文件夹'");
+    System.out.println("欢迎来到'删除文件夹'");
     File confirmed_path = FileTool.comfirm_path(); // 确认路径
     System.out.println("\n输入的路径合法且存在!");
 
@@ -606,7 +601,7 @@ public class FileTool {
     System.out.println("前往的目录" + confirmed_path.getPath() + "中有以下的文件后缀: \n" + suffix_sets.toString());
     // System.out.println();
     
-    System.out.print("\n请输入要批量重命名的文件后缀: ");
+    System.out.print("\n请选择并输入要批量重命名的文件后缀(如.txt): ");
     Scanner user_input = new Scanner(System.in);
     String input_suffix = user_input.nextLine();
     Pattern suffix_standard = Pattern.compile("\\.[a-zA-Z0-9]{3,4}");
@@ -654,9 +649,60 @@ public class FileTool {
     }
   }
 
+  // 8. 文件分类 (依据文件后缀名分成不同的文件夹进行文件转移)
+  public static void file_Classification(){
+    System.out.println("欢迎来到'文件分类'");
+    System.out.println("说明: 本功能会自动依据'文件后缀'自动创建对应类型的文件并转移文件");
+    File confirmed_path =  FileTool.comfirm_path();
+    System.out.println("\n输入的路径合法且存在!");
+    ArrayList<String> suffix_sets = FileTool.get_file_suffixs(confirmed_path);
+    if(suffix_sets.size()==0){
+      System.out.println("\n警告: 该文件夹中未找到任何有效文件可以分类! 分类程序已自行中断...");
+      return;
+    }
+
+    System.out.println("前往的目录" + confirmed_path.getPath() + "中有以下的文件后缀: \n" + suffix_sets.toString());
+    System.out.print("您确定要在"+ confirmed_path.getPath() +"目录下开始进行文件分类操作吗? [Y/N]: ");
+    Scanner user_input = new Scanner(System.in);
+    String yes_no = user_input.nextLine();
+    boolean vaild_input = FileTool.validate_yes_no(yes_no);
+    while (!vaild_input) {
+      System.out.print("输入无效, 请重试[Y/N]: ");
+      yes_no = user_input.nextLine();
+      vaild_input = FileTool.validate_yes_no(yes_no);
+    }
+    boolean continue_classification = FileTool.get_yes_no(yes_no);
+    if(continue_classification){
+      for(int i=0; i<suffix_sets.size(); i++){
+        String current_suffix = suffix_sets.get(i);
+        CustomFilter current_filter = new CustomFilter(current_suffix);
+        File[] file_arr = confirmed_path.listFiles(current_filter); // 根据后缀取得当前目录下'所有对应的文件'
+        File new_folder = new File(confirmed_path.getPath(),current_suffix);
+        if(new_folder.mkdir()){
+          System.out.println("\n成功创建了文件夹 " + current_suffix + ", 正在移动文件");
+          // System.out.println("当前的new_folder 路径: " + new_folder.getPath() +" 名称: " + new_folder.getName());
+          for(File j: file_arr){
+            File new_reference = new File(new_folder.getPath(),j.getName());
+            if(j.renameTo(new_reference)){
+              System.out.println("成功移动文件 " + j.getName() + " 至 " + new_folder.getPath());
+            }else{
+              System.out.println("尝试移动" + j.getName() + " 时发生了问题, 可能是文件被占用...");
+            }
+          }
+        }else{
+          System.out.println("尝试创建 " + current_suffix + " 文件夹时出错, 可能是文件夹已经存在...");
+        }
+
+      }
+    }else{
+      System.out.println("用户取消了'文件分类'操作...");
+    }
+    
+  }
+
+
   // 主函数 (这里调用类中的方法要用确保是 '类'的静态方法, FileTool.xxx(), 上面的方法处于'同一级'就不用, 但是要用也行, 统一规范)
   public static void main(String[] args) throws IOException {
-     // 这一行并不会立即唤起'输入'!
     Pattern single_number = Pattern.compile("[0-9]{1}");
     String current_line;
     // Matcher number_matcher = single_number.matcher(current_line);
@@ -718,10 +764,10 @@ public class FileTool {
         break;
 
       case "8":
-        
+        FileTool.file_Classification();
         break;
       case "9":
-
+        System.out.println("你发现了隐藏彩蛋⑨ :3");
         break;
 
       case "0":
