@@ -240,7 +240,7 @@ public class FileTool {
   }
 
   // 确定'指定文件', 返回FIle对象 (需要传入上面的'返回路径'(一个确定合法且存在的路径), 单独拆开来灵活运用)
-  public static File comfirm_File(File confirmed_path){
+  public static File confirm_file(File confirmed_path){
     // System.out.print("请输入想要执行操作的文件名称(记得带.后缀): ");
     Scanner user_input = new Scanner(System.in);
     String filename = user_input.nextLine(); // 获取'输入文件'名
@@ -344,7 +344,7 @@ public class FileTool {
     String files = FileTool.list_files_and_folders(confirmed_path, true, false);
     System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + files);
     System.out.print("请输入想要复制的文件名称(记得带.后缀): ");
-    File target_file = FileTool.comfirm_File(confirmed_path);
+    File target_file = FileTool.confirm_file(confirmed_path);
 
     //成功校验了输入的文件名的合法性 & 存在性
     System.out.println("找到输入文件: " + target_file.getName() + ", 路径位于: " + target_file.getPath());
@@ -365,7 +365,7 @@ public class FileTool {
     String files = FileTool.list_files_and_folders(confirmed_path, true, false);
     System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + files);
     System.out.print("请输入想复删除的文件名称(记得带.后缀): ");
-    File target_file = FileTool.comfirm_File(confirmed_path);
+    File target_file = FileTool.confirm_file(confirmed_path);
 
     System.out.println("\n找到输入文件: " + target_file.getName() + ", 路径位于: " + target_file.getPath());
     System.out.print("你确定要删除文件 " + target_file.getName() + " 吗? [Y/N]: ");
@@ -393,6 +393,56 @@ public class FileTool {
     System.out.println("欢迎来到移动/重命名文件");
     File confirmed_path = FileTool.comfirm_path();
     System.out.println("已确认操作路径为: " + confirmed_path.getPath());
+    String files = FileTool.list_files_and_folders(confirmed_path, true, false);
+    System.out.println("前往的目录" + confirmed_path.getPath() + "中有如下文件: \n" + files);
+    System.out.print("请输入要操作的文件名: ");
+    File target_file = FileTool.confirm_file(confirmed_path);
+    System.out.println("找到输入文件: " + target_file.getName() + ", 路径位于: " + target_file.getPath());
+    System.out.println("\n(Y)es - 重命名文件, (N)o -移动文件"); // 我偷懒了, 直接用已有的智慧结晶ba ^.^
+    System.out.print("请选择您的操作[Y/N]: ");
+    Scanner user_input = new Scanner(System.in);
+    String yes_no_content = user_input.nextLine();
+    boolean valid_ans = FileTool.validate_yes_no(yes_no_content);
+    while(!valid_ans){
+      System.out.print("\n输入无效, 请重试 [Y/N]: ");
+      yes_no_content = user_input.nextLine();
+      valid_ans = FileTool.validate_yes_no(yes_no_content);
+    }
+    // 通过Yes No校验 (Y-重命名, N-移动文件)
+    boolean rename = FileTool.get_yes_no(yes_no_content);
+    if(rename){ // 用户选择'重命名'
+      System.out.println("\n用户选择了'重命名'文件");
+      System.out.print("请输入新文件名: ");
+      String new_filename = user_input.nextLine();
+      boolean valid_filename = FileTool.validate_filename(new_filename);
+      while (!valid_filename) { // 其实可以写成do{}while()的, 以后注意
+        System.out.print("重命名的文件名不合法, 请重试: ");
+        new_filename = user_input.nextLine();
+        valid_filename = FileTool.validate_filename(new_filename);
+      }
+      File new_reference = new File(confirmed_path.getPath(), new_filename);
+      String old_filename = target_file.getName();
+      if (target_file.renameTo(new_reference)) {
+        System.out.println("\n文件" + old_filename + "成功重命名为" + target_file.getName() + "!");
+      }else{
+        System.out.println("文件重命名失败, 请前往425行附近进行排错");
+      }
+    }else{ // 用户选择'移动'
+      System.out.println("\n用户选择了'移动'文件");
+      System.out.println("\n请依据下方提示确认'输出路径': ");
+      File output_path = FileTool.comfirm_path();
+      String old_path = target_file.getPath();
+      String current_filename = target_file.getName();
+      File new_reference = new File(output_path.getPath(),current_filename);
+      if(target_file.renameTo(new_reference)){
+        System.out.println("\n文件移动成功!");
+        System.out.println("从: " + old_path);
+        System.out.println("移动至: " + new_reference.getPath());
+      }else{
+        System.out.println("\n移动文件时发生了错误, 可能是目标目录存在同名文件...");
+        System.out.println("操作失败...");
+      }
+    }
   }
 
   // 5. 新建文件夹
@@ -561,12 +611,13 @@ public class FileTool {
       case "2":
         FileTool.copy_File();
         break;
+
       case "3":
         FileTool.delete_Files();
         break;
 
       case "4":
-        
+        FileTool.rename_Or_Move_File();
         break;
 
       case "5":
