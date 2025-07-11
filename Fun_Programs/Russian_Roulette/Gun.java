@@ -37,7 +37,7 @@ public class Gun {
       target.deduce_life();
       System.out.println("BOOM!! " + target.get_name() + "生命值-1!!");
     }else{
-      System.out.println("咔! 枪没响...");
+      System.out.println("咔! 噔噔咚, 枪没响...");
     }
     chamber.remove(0); // 移除首发弹药
   }
