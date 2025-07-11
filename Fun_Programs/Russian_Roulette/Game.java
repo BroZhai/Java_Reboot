@@ -44,7 +44,7 @@ public class Game {
     Scanner user_input = new Scanner(System.in);
     String player_name = user_input.nextLine();
 
-    int randon_life = (int) (Math.random() * 4) + 1; // 玩家生命值 2-4 范围随机
+    int randon_life = (int) (Math.random() * 4) + 1; // 玩家生命值 1-4 范围随机
 
     ArrayList<Player> player_list = new ArrayList<>(2); // 玩家队列
     Player user = new Player(player_name, randon_life);
