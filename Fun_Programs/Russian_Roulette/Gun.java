@@ -38,6 +38,13 @@ public class Gun {
       chamber.add((int)Math.random()*this.total_shells, real_shell);
       this.total_shells+=2;
       this.real_shells+=2;
+    }else if(this.blank_shells == 0){ // 一发空弹没塞
+      Shell real_shell = new Shell(false);
+      chamber.add((int)Math.random()*this.total_shells, real_shell);
+      chamber.add((int)Math.random()*this.total_shells, real_shell);
+      this.total_shells+=2;
+      this.blank_shells+=2;
+
     }
   }
   
@@ -68,6 +75,13 @@ public class Gun {
     System.out.println("\n当前Gun中共有 "+ this.total_shells +" 颗子弹");
     System.out.println("实弹: " + this.real_shells +" 发");
     System.out.println("空弹: " + this.blank_shells + " 发");
+  }
+
+  public int[] get_chamber(){
+    int[] chamber_shells = new int[2];
+    chamber_shells[0] = this.real_shells;
+    chamber_shells[1] = this.blank_shells;
+    return chamber_shells;
   }
 
 }

@@ -62,7 +62,7 @@ public class Game {
     while (player_list.size() != 1) { // 双方玩家都存活
       System.out.println("\n当前玩家血量: ");
       for (Player p : player_list) {
-        System.out.println(p.get_name() + ": " + p.get_life() + " 点生命");
+        System.out.println(p.get_name() + ": " + p.get_life() + " HP");
         if (p.get_life() <= 0) { // 有人生命为0
           player_list.remove(p); // 移除队列生命为0的玩家
           break;
@@ -86,38 +86,62 @@ public class Game {
       if (player_list.get(i % 2).get_name().equals("Devil")) { // 电脑回合
         System.out.println("\n当前为电脑 " + comp.get_name() + " 的回合");
         Thread.sleep(1500);
-        // 50%随机选择 (一会儿再做复杂的)
-        int action = (int) (Math.random() * 2) + 1; // 取值范围[1-2] 1射玩家, 2射自己
-        if (action == 1) { // AI选择干玩家
-          System.out.println("\n" + comp.get_name() + " 将枪口对准了 " + user.get_name() + "...");
-          Thread.sleep(1500);
-          if (gun.shoot(player_list.get(0))) {
-            show_boom(boom_effect); // 炸裂的视觉效果
-            Thread.sleep(1200);
-            System.out.println(user.get_name() + "生命值-1!!");
-            Thread.sleep(1500);
-          } else {
-            System.out.println("\n咔! 哦呀?! 枪没响...");
-            Thread.sleep(1500);
-          }
 
-        } else { // AI选择干自己
+        int[] chamber_info = gun.get_chamber();
+        if (chamber_info[0] == 0) { // AI发现没有实弹了 (只剩空弹, 耗到底)
           System.out.println("\n" + comp.get_name() + "将枪口对准了自己...");
           Thread.sleep(1500);
           if (!gun.shoot(player_list.get(i % 2))) { // 枪没响
-            System.out.println("\n咔! 哦豁?! 枪没响!");
+            System.out.println("\n咔! 枪没响!");
             Thread.sleep(1500);
             System.out.println("\n现在仍是" + comp.get_name() + "的回合...");
             Thread.sleep(1500);
             i++; // 提前 + 1, 循环结束时还会来个+1, 通过取余刚好让'下个回合' 仍是自己
-          } else {
-            show_boom(boom_effect);
-            Thread.sleep(1200);
-            System.out.println(comp.get_name() + " 生命值-1!!");
-            Thread.sleep(1500);
           }
+        }else if(chamber_info[1] == 0){ // AI 发现没有空弹了 (只剩实弹, 射爆玩家)
+          System.out.println("\n" + comp.get_name() + "将枪口对准了 "+ user.get_name()+"...");
+          Thread.sleep(1500);
+          gun.shoot(player_list.get(0));
+          show_boom(boom_effect);
+          Thread.sleep(1200);
+          System.out.println(user.get_name() + "生命值-1!!");
+          Thread.sleep(1500);
+        }else{
+          // 进入50%随机选择
+          int action = (int) (Math.random() * 2) + 1; // 取值范围[1-2] 1射玩家, 2射自己
+          if (action == 1) { // AI选择干玩家
+            System.out.println("\n" + comp.get_name() + " 将枪口对准了 " + user.get_name() + "...");
+            Thread.sleep(1500);
+            if (gun.shoot(player_list.get(0))) {
+              show_boom(boom_effect); // 炸裂的视觉效果
+              Thread.sleep(1200);
+              System.out.println(user.get_name() + "生命值-1!!");
+              Thread.sleep(1500);
+            } else {
+              System.out.println("\n咔! 哦呀?! 枪没响...");
+              Thread.sleep(1500);
+            }
 
+          } else { // AI选择干自己
+            System.out.println("\n" + comp.get_name() + "将枪口对准了自己...");
+            Thread.sleep(1500);
+            if (!gun.shoot(player_list.get(i % 2))) { // 枪没响
+              System.out.println("\n咔! 哦豁?! 枪没响!");
+              Thread.sleep(1500);
+              System.out.println("\n现在仍是" + comp.get_name() + "的回合...");
+              Thread.sleep(1500);
+              i++; // 提前 + 1, 循环结束时还会来个+1, 通过取余刚好让'下个回合' 仍是自己
+            } else {
+              show_boom(boom_effect);
+              Thread.sleep(1200);
+              System.out.println(comp.get_name() + " 生命值-1!!");
+              Thread.sleep(1500);
+            }
+
+          } 
         }
+
+        
 
       } else { // 玩家回合
         System.out.println("\n当前是玩家 " + user.get_name() + " 的回合");
