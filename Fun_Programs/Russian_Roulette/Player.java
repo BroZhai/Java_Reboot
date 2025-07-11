@@ -20,7 +20,7 @@ public class Player { // 玩家类
   }
 
   public void deduce_life(){
-    this.life--;
+    this.life = this.life-1;
   }
 
 

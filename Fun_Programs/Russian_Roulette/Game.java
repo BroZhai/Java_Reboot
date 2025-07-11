@@ -22,30 +22,64 @@ public class Game {
     // Player[] player_list = new Player[2];
     ArrayList<Player> player_list = new ArrayList<>(2);
     Player user = new Player(player_name, randon_life);
-    System.out.println("\n成功创建玩家: " + user.get_name() + "血量: " + user.get_life());
+    System.out.println("\n成功创建玩家: " + user.get_name());
     player_list.add(user);
 
     Player comp = new Player("Devil", randon_life);
-    System.out.println("成功创建敌对玩家: " + comp.get_name() + "血量: " + comp.get_life());
+    System.out.println("成功创建敌对玩家: " + comp.get_name());
     player_list.add(1, comp);
 
     int init_shells = (int) (Math.random() * 7) + 2; // 生成 2-8 颗首轮子弹数
     Gun gun = new Gun(init_shells);
-    System.out.println();
     boolean keep_running = true;
+    int i=0;
     while (keep_running && player_list.size() != 1) {
+      System.out.println("当前玩家血量: ");
+      for(Player p:player_list){
+        System.out.println(p.get_name() + ": " + p.get_life() + " 点生命");
+         if (p.get_life() <= 0) { // 有人生命为0
+          player_list.remove(p); // 移除队列成的玩家
+          keep_running = false;
+          break;
+        } 
+      }
+      if(player_list.size()==1){
+        break;
+      }
+      int reload_shells = (int) (Math.random() * 7) + 2;
+      if(gun.isChamberEmpty()){ // 弹药清空, 自动重装
+        System.out.println("检测到弹夹清空, 正在自动换弹...");
+        gun.reload(reload_shells);
+      }
       gun.check_chamber();
-      for (int i = 0; i < player_list.size(); i++) {
-        if (player_list.get(i).get_life() == 0) {
-          player_list.remove(i);
-          keep_running = false;
-          break;
-        } else if (player_list.get(i).get_name().equals("Devil")) { // 电脑回合
-          System.out.println("\n当前为电脑 " + player_list.get(i).get_name() + " 的回合");
-          keep_running = false;
-          break;
+
+      if (player_list.get(i%2).get_name().equals("Devil")) { // 电脑回合
+          System.out.println("\n当前为电脑 " + comp.get_name() + " 的回合");
+          // 50%随机选择 (一会儿再做复杂的)
+          int action = (int)(Math.random()*2)+1; // 取值范围[1-2] 1射玩家, 2射自己
+          if(action==1){
+            System.out.println("\n"+comp.get_name() + " 选择了干玩家!");
+            if(gun.shoot(player_list.get(0))){
+              System.out.println("\nBOOM!! " + user.get_name() + "生命值-1!!");
+            }else{
+              System.out.println("\n咔! 哦呀?! 枪没响...");
+            }
+            
+            }else{ // AI选择干自己
+              System.out.println("\n"+comp.get_name() + "选择将枪口对准自己...");
+              if(!gun.shoot(player_list.get(i%2))){ // 枪没响
+                System.out.println("\n咔! 哦豁?! 枪没响!");
+                System.out.println("\n现在仍是" + comp.get_name() + "的回合...");
+                i++;
+              }else{
+                System.out.println("\nBOOM!! " + comp.get_name() + "生命值-1!!");
+              }
+              
+            }
+          // keep_running = false;
+          // continue;
         } else {
-          System.out.println("\n当前是玩家 " + player_list.get(i).get_name() + " 的回合");
+          System.out.println("\n当前是玩家 " + player_list.get(i%2).get_name() + " 的回合");
           System.out.println("\n1. 射爆对面!");
           System.out.println("2. 射自己...");
           System.out.print("\n请选择您的操作: ");
@@ -57,18 +91,33 @@ public class Game {
             operation = user_input.nextLine();
             valid_input = game_format.matcher(operation).matches();
           }
+
           if (operation.equals("1")) {
-            System.out.println("玩家 " + player_list.get(i).get_name() + " 选择了射爆对面!!");
+            // System.out.println("玩家 " + player_list.get(i).get_name() + " 选择了射爆对面!!");
+            if(gun.shoot(player_list.get((i%2)+1))){
+              System.out.println("\nBOOM!! " + comp.get_name() + "生命值-1!!");
+            }else{
+              System.out.println("\n咔! 噔噔咚, 枪没响...");
+            }
           } else {
-            System.out.println("玩家 " + player_list.get(i).get_name() + " 选择了射自己...");
+            System.out.println("玩家 " + player_list.get(i%2).get_name() + " 选择了射自己...");
+            boolean real_shell =gun.shoot(player_list.get(i%2));
+            if(!real_shell){
+              System.out.println("\n咔! 哦豁?! 枪没响!");
+              i++; // 下一个回合仍是'玩家''
+            }else{
+              System.out.println("\nBOOM! 噔噔咚, " + player_list.get(i%2).get_name() + "生命值-1...");
+            }
           }
+
         }
-      }
-    }
+      i++; // 交个'下个玩家'
+    } // while循环结束
+    System.out.println("\n游戏结束, 赢家是: " + player_list.get(0).get_name());
   }
 
   public static void main(String[] args) {
-    System.out.println("您好, 欢迎来到山寨Russian_Reoulette");
+    System.out.println("您好, 欢迎来到山寨Russian_Roulette");
     Pattern menu_format = Pattern.compile("[1-2]{1}"); // 限定输入为 1, 2
     System.out.println("\n1. 开始游戏");
     System.out.println("2. 退出游戏");

@@ -10,7 +10,7 @@ public class Gun {
   private int total_shells;
   private int blank_shells = 0;
   private int real_shells = 0;
-  private ArrayList<Shell> chamber;
+  private static ArrayList<Shell> chamber;
 
   public Gun(int total_shells){
     this.total_shells = total_shells;
@@ -31,23 +31,33 @@ public class Gun {
     }
   }
   
-  public void shoot(Player target){
+  public boolean shoot(Player target){
     boolean real_shell = chamber.get(0).get_shell(); // 读取第一个弹药
     if (real_shell) {
       target.deduce_life();
-      System.out.println("BOOM!! " + target.get_name() + "生命值-1!!");
+      this.total_shells = this.total_shells-1;
+      this.real_shells = this.real_shells-1;
+      chamber.remove(0); // 移除枪膛中的弹药对象
+      return true; // 实弹
     }else{
-      System.out.println("咔! 噔噔咚, 枪没响...");
+      this.total_shells = this.total_shells-1;
+      this.blank_shells = this.blank_shells-1;
+      chamber.remove(0); 
+      return false; // 空弹
     }
-    chamber.remove(0); // 移除首发弹药
   }
 
+  public boolean isChamberEmpty(){
+    if(this.total_shells==0){
+      return true;
+    }
+    return false;
+  }
   
   public void check_chamber(){
-    System.out.println("当前Gun中共有 "+ this.total_shells +" 颗子弹");
-    System.out.println("其中有 " + this.real_shells +" 发实弹");
-    System.out.println(this.blank_shells + " 发空弹");
-
+    System.out.println("\n当前Gun中共有 "+ this.total_shells +" 颗子弹");
+    System.out.println("实弹: " + this.real_shells +" 发");
+    System.out.println("空弹: " + this.blank_shells + " 发");
   }
 
 }
