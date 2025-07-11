@@ -15,6 +15,10 @@ public class Shell {
     }
   }
 
+  public Shell(boolean is_real){ // 传入自定义子弹, 补充用
+    this.is_real=is_real;
+  }
+
   public boolean get_shell(){
     return this.is_real;
   }

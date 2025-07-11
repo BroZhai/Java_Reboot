@@ -29,6 +29,16 @@ public class Gun {
       }
       chamber.add(current_shell);
     }
+    if(this.real_shells == 0){ // 捏毛毛一颗实弹都没有, 手动在弹夹'随机位置'加两颗
+      // System.out.println("本轮未能生成实弹!");
+      Shell real_shell = new Shell(true);
+      // 假设长度为4(个空的)
+      // int random_index = (int)Math.random()*this.total_shells;
+      chamber.add((int)Math.random()*this.total_shells, real_shell);
+      chamber.add((int)Math.random()*this.total_shells, real_shell);
+      this.total_shells+=2;
+      this.real_shells+=2;
+    }
   }
   
   public boolean shoot(Player target){
