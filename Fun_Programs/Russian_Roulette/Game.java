@@ -27,7 +27,9 @@ public class Game{
     System.out.println("成功创建敌对玩家: " + comp.get_name());
     player_list[1]=comp;
     
-    
+    int init_shells = (int)(Math.random()*7)+2; // 生成 2-8 颗首轮子弹数
+    Gun gun = new Gun(init_shells);
+    gun.check_chamber();
     // boolean keep_running = true;
     // while(keep_running){
       

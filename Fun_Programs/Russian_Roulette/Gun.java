@@ -27,7 +27,7 @@ public class Gun {
       }else{
         this.blank_shells++;
       }
-      chamber.set(i, current_shell); // 装入弹匣
+      chamber.add(current_shell);
     }
   }
   
@@ -39,7 +39,15 @@ public class Gun {
     }else{
       System.out.println("咔! 枪没响...");
     }
-    chamber.remove(0);
+    chamber.remove(0); // 移除首发弹药
+  }
+
+  
+  public void check_chamber(){
+    System.out.println("当前Gun中共有 "+ this.total_shells +" 颗子弹");
+    System.out.println("其中有 " + this.real_shells +" 发实弹");
+    System.out.println(this.blank_shells + " 发空弹");
+
   }
 
 }
