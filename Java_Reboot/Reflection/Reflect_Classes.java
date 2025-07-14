@@ -6,7 +6,8 @@ import java.lang.Class; // 获取Class对象
 import java.lang.reflect.Constructor; // 获取'构造函数'对象
 import java.lang.reflect.Field; // 获取'属性'对象
 import java.lang.reflect.Method; // 获取'方法'对象
-
+import java.lang.reflect.InvocationTargetException; // 反射的'异常类'
+import java.util.ArrayList;
 // 辅助工具类
 import java.util.Arrays;
 
@@ -20,9 +21,9 @@ import Java_Reboot.Reflection.test_classes.Advance_Player;
 public class Reflect_Classes {
   
   // 在本实验中, 我们来实践一下Java反射
-  public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException {
+  public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 
-    // 1. 获取要操作的class对象, 这里以Gun为例
+    // 1. 获取要操作的class对象, 这里以Gun为例 (Class类实验区, 其中也包含了Constructor的实验)
     // String class_name_of_Gun = Gun.class.getName();
       Class<?> gun_class = Class.forName(Gun.class.getName());
       System.out.println("已成功取得class: " + gun_class.getName());
@@ -78,7 +79,31 @@ public class Reflect_Classes {
       Class<?>[] interfaces_in_shell_class = shell_class.getInterfaces(); // 用上面已经取得过的Shell类
       System.out.println("Shell类实现了如下的接口(class):");
       for(Class i: interfaces_in_shell_class){
-        System.out.println(i.getName());
+        System.out.println(i.getSimpleName());
       }
+      
+
+      // Constructor类补充实验区 (.newInstance())
+      // 这里使用拿到的gun_class利用constructor'间接'来创建一个实例
+      int total_shells = 7;
+      Object gun_obj = gun_class.getConstructor(int.class).newInstance(total_shells); // 沃日捏吗, 这个方法会抛出4个错误
+      ((Gun)gun_obj).check_chamber(); // 因为newInstance()返回的对象是一个抽象的Object, 在知道'原类型'的情况下, 我们可以对其进行进一步转化
+
+      System.out.println();
+      // Field类实验区
+      Field ammo_field = gun_class.getDeclaredField("blank_shells"); // 定义要访问的'属性名'
+      ammo_field.setAccessible(true); // 注意, 如果要修改的属性是private, 则早任何的get/set操作前都要先进行setAccessible()
+      int blank_count = (int)ammo_field.get(gun_obj);  // 在实例对象上完成对上面定义属性的访问, 返回Object
+      System.out.println("当前取得对创建对象的'blank_shells'属性为: " + blank_count);
+      ammo_field.set(gun_obj, 8); // 强制在实例对象上 设置'新属性值' 
+      System.out.println("修改后拿到对象的'blank_shells'属性为: " + (int)ammo_field.get(gun_obj));
+
+      
+      System.out.println();
+      // Method类实验区
+      Method see_remain = gun_class.getMethod("check_chamber");
+      System.out.println("Method对象 see_reamain 准备调用的方法为: " + see_remain.getName() + "(), 作用在gun_obj上");
+      see_remain.invoke(gun_obj);
+
   }
 }
