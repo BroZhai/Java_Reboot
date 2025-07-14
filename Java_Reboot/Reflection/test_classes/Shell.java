@@ -2,7 +2,7 @@ package Java_Reboot.Reflection.test_classes;
 
 import java.lang.Math;
 
-public class Shell {
+public class Shell implements Amno{
 
   private boolean is_real;
 

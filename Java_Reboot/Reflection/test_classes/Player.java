@@ -1,7 +1,5 @@
 package Java_Reboot.Reflection.test_classes;
 
-import java.lang.Math;
-
 public class Player { // 玩家类
   private String player_name;
   private int life;

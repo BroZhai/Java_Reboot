@@ -7,7 +7,7 @@ import Fun_Programs.Russian_Roulette.Shell;
 
 public class Gun {
 
-  private int total_shells;
+  public int total_shells;
   private int blank_shells = 0;
   private int real_shells = 0;
   private static ArrayList<Shell> chamber;
