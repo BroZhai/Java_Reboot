@@ -6,7 +6,7 @@ import java.util.HashMap; // 导入HashMap类
 // 辅助工具类
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Map; // HashMap实践的接口, 不属于Collection类中
 
 public class HashSet_and_HashMap {
   
@@ -34,9 +34,16 @@ public class HashSet_and_HashMap {
     System.out.println("HashSet现有: " + unique_names.toString());
     System.out.println("当前HashSet的大小为: " + unique_names.size());
     
-
+    System.out.println();
     // HashMap实验区
-    
+    HashMap<String, Integer> name_and_age = new HashMap<>();
+    name_and_age.put("otto", -1);
+    name_and_age.put("IceWing", 25);
+    name_and_age.put("cirno", 9);
+    System.out.println("当前HashMap中有: " + name_and_age.toString());
+    name_and_age.putIfAbsent("otto", 114); // 这一行不会执行, 因为otto键已存在
+    System.out.println("小测试: " + name_and_age.toString());
+    Map<String, Integer> person_list = Map.of();
   }
 
 }
