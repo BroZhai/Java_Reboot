@@ -27,9 +27,9 @@ public class Linked_List <E> {
     for(E i: my_list){
       System.out.println(i);
     }
-
-    if(my_list.removeFirst()!=null){
-      System.out.println("成功移除了链表的第一个元素");
+    E first_obj = my_list.removeFirst();
+    if(first_obj!=null){
+      System.out.println("成功移除了链表的第一个元素: " + first_obj);
     }
 
     // my_list.clear();
