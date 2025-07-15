@@ -6,6 +6,7 @@ import java.util.HashMap; // 导入HashMap类
 // 辅助工具类
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class HashSet_and_HashMap {
   
@@ -32,6 +33,9 @@ public class HashSet_and_HashMap {
     unique_names.removeAll(remove_list);
     System.out.println("HashSet现有: " + unique_names.toString());
     System.out.println("当前HashSet的大小为: " + unique_names.size());
+    
+
+    // HashMap实验区
     
   }
 
