@@ -1,12 +1,19 @@
 package Java_Reboot.FIle_IO_Experiment.Nio_Files;
 
+// 相关异常类
+import java.io.IOException; // 硬盘IO错误
+import java.nio.file.DirectoryNotEmptyException; // 文件夹非空
+
 import java.nio.file.Files; // 导入 Files类
 import java.nio.file.Path; // 导入 Path类
 import java.nio.file.Paths; // 只有 Paths类的静态方法.get / .of 才能创建Path类对象
 
+// 其他类
+import java.util.ArrayList; // ArrayList类
+
 public class Files_and_Path {
   // 我们来实践一下这个Java 7+之后专门出现的对'文件/目录'操作的类, 据说有更多的功能, 现在实际项目开发常用这个, 操作还内置了'缓存空间'
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException{
     // Path类实验区 (对应File类的'纯路径/文件')
     String current_path = System.getProperty("user.dir");
     System.out.println("当前取得的默认工作目录user.dir为: " + current_path);
@@ -38,12 +45,43 @@ public class Files_and_Path {
       System.out.println("拿到的'新目录'为: " + inner_folder.toString());
       System.out.println("该目录到test.txt的路径为: " + inner_folder.relativize(test_file_path));
       System.out.println("该目录当前是'绝对路径'吗? " + inner_folder.isAbsolute());  // false
-      System.out.println("该目录是否以'Java_Reboot'开头? " + inner_folder.startsWith("Java_Reboot") + ", 是否以'poop'结尾: " + inner_folder.endsWith("inner_folder")); // true false
+      System.out.println("该目录是否以'Java_Reboot'开头? " + inner_folder.startsWith("Java_Reboot") + ", 是否以'folder_poop'结尾: " + inner_folder.endsWith("folder_poop")); // true false
     }
 
-
+    System.out.println();
+    // File类实验区 (注: Files并没有对象, 只用静态的'操作Path'方法)
+    Path new_folder = Paths.get("Java_Reboot","File_IO_Experiment","Nio_Files","new_folder");
+    boolean new_folder_exist = Files.exists(new_folder);
+    if(!new_folder_exist){
+      System.out.println("检测到Path对象 new_folder不存在, 现直接创建");
+      new_folder = Files.createDirectory(new_folder); // 传入new_folder规定的路径进行'新文件夹'的创建, 返回一个新Path对象
+      System.out.println("成功在 " + new_folder + " 创建了目录");
+    }else{
+      System.out.println("检测到 " + new_folder + " 已存在同名目录, 将不会重复创建...");
+    }
+    Path delete_path = Paths.get("Java_Reboot","File_IO_Experiment","Nio_Files","new_folder","..","test_folder","folder_loop");  // 使用 ".."在相对路径中拼接, 灵活返回上一级 (玩点花的
+    // System.out.println(delete_path);
+    // System.out.println(Files.exists(delete_path));
+    try {
+      boolean delete_result = Files.deleteIfExists(delete_path);
+      if(delete_result){
+        System.out.println("成功删除了文件夹: " + delete_path.getFileName());
+      }else{
+        System.out.println("未能成功删除文件夹, 可能是文件夹不存在");
+      }
+    } catch (DirectoryNotEmptyException e) {
+      System.out.println("删除失败, 目标文件夹仍有嵌套内容...");
+    }
+    
+    ArrayList<String> file_content = (ArrayList<String>) Files.readAllLines(test_file_path); // 这里返回的是个List<String>, 可以进一步转成ArrayList
+    int counter = 1;
+    for(String content:file_content){
+      System.out.println("第"+counter+"行的内容为: " + content);
+      counter++;
+    }
   }
+  
 
-
+ 
 
 }
