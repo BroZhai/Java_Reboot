@@ -18,7 +18,7 @@ public class Seralizable_Experiment {
   // 在同级文件夹下, 我们已有一个可以被序列化的Gun对象
 
   public static void main(String[] args) throws IOException, ClassNotFoundException{
-    Gun shotgun = new Gun("Benelli M3 Super90", "12 Gague", false);
+    Gun shotgun = new Gun("Benelli M3 Super90", "12 Gague", false,141);
     // Gun smg = new Gun("MAC 10", ".45 ACP", false);
     // Gun pistol = new Gun("Beretta M9","9mm",true);
 
@@ -31,6 +31,7 @@ public class Seralizable_Experiment {
     Gun restore_shotgun = (Gun) shotgun_obj_in.readObject();
     System.out.println("当前通过重新读入的 "+ shotgun_path.getFileName() + " 序列文件, 取得的枪名为: " +restore_shotgun.get_name());
     System.out.println("该枪所对应的子弹类型为: " + restore_shotgun.get_ammo_type());
+    // System.out.println("尝试读取的gun_id为: " + restore_shotgun.get_gun_id()); // 会出错, 因为gun_id属性被设置了transient, 并没有存储在序列化的文件中, 强行读取会爆null
 
   }
 }

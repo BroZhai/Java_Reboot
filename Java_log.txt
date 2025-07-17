@@ -145,4 +145,5 @@
 了解了SYNC和ASYNC的区别, 同时知道了不同刷盘的相关的知识点
 完成了对重磅级方法write()的使用, 知道了一堆要追加的的'操作枚举量'
 完成了对Java NIO FIles类 和 Path类所有操作的实验, 修补了对应的笔记
+成功简单的对Java内置的序列化类ObjectInput/OutputStream进行了实验, 知道了transient关键字的妙用!
 2025.07.17
