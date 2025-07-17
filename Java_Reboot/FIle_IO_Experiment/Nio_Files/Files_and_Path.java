@@ -1,12 +1,15 @@
 package Java_Reboot.FIle_IO_Experiment.Nio_Files;
 
+import java.io.File;
 // 相关异常类
 import java.io.IOException; // 硬盘IO错误
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryNotEmptyException; // 文件夹非空
 
 import java.nio.file.Files; // 导入 Files类
 import java.nio.file.Path; // 导入 Path类
 import java.nio.file.Paths; // 只有 Paths类的静态方法.get / .of 才能创建Path类对象
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption; // Files类文件'打开'操作相关枚举常量 (定义不同的'打开方式')
 
 // 其他类
@@ -82,26 +85,43 @@ public class Files_and_Path {
       counter++;
     }
 
-    System.out.println();
+    // Path modified_txt = Files.writeString(test_file_path,"\n114514\n1919810\n");
+
+    String all_content = Files.readString(test_file_path);
+    System.out.println("\n读到的all_content为: " + all_content); // 直接readString()将会读取所有字符信息, 包括换行符
+
+
+    System.out.println(); // 下方代码先注释, 省磁盘IO (传统'手动复制')
     Path byte_mp3 = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files","test_music.mp3"); // 玩点花式路径拼接
     // System.out.println(Files.exists(byte_mp3));
     boolean is_mp3_exist = Files.exists(byte_mp3);
-    if(is_mp3_exist){
-      // 手动复制 (实验readAllBytes() 和 write())
-      System.out.println("检测到 " + byte_mp3.getFileName() + "存在! 正在读取byte信息至数组...");
-      byte[] byte_data = Files.readAllBytes(byte_mp3); // 这个操作内置了'操作缓存'
-      System.out.println("完成了对 " + byte_mp3.getFileName() + " 的读取!");
-      Scanner filename_input = new Scanner(System.in);
-      System.out.print("请输入新mp3的文件名(仅名称即可)"); // 这里为了简单做实验, 就不做校验了 :3
-      String new_mp3_name = filename_input.nextLine();
-      Path output_mp3 = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files", new_mp3_name+".mp3"); // 这里补充后缀
-      // System.out.println("新建的创建的 " + output_mp3.getFileName() + " 现在存在吗? " + Files.exists(output_mp3)); // 第一次为false, 往后为true
-      output_mp3 = Files.write(output_mp3, byte_data,StandardOpenOption.CREATE,StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING); // '复制的文件'不存在即创建, 否则自动打开, 打开后'清空原内容', 重新写入新byte[]数据
-      // System.out.println("现在往其中写入了数据, "+ output_mp3.getFileName() + " 现在存在吗? " + Files.exists(output_mp3) ); // true
-    }else{
-      System.out.println("没有找到文件 " + byte_mp3.getFileName() + ", byte复制操作已跳过");
-    }
+    System.out.println("拿到的mp3的大小为: " + Files.size(byte_mp3) + " Bytes");
+    // if(is_mp3_exist){
+    //   // 手动复制 (实验readAllBytes() 和 write())
+    //   System.out.println("检测到 " + byte_mp3.getFileName() + "存在! 正在读取byte信息至数组...");
+    //   byte[] byte_data = Files.readAllBytes(byte_mp3); // 这个操作内置了'操作缓存'
+    //   System.out.println("完成了对 " + byte_mp3.getFileName() + " 的读取!");
+    //   Scanner filename_input = new Scanner(System.in);
+    //   System.out.print("请输入新mp3的文件名(仅名称即可)"); // 这里为了简单做实验, 就不做校验了 :3
+    //   String new_mp3_name = filename_input.nextLine();
+    //   Path output_mp3 = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files", new_mp3_name+".mp3"); // 这里补充后缀
+    //   // System.out.println("新建的创建的 " + output_mp3.getFileName() + " 现在存在吗? " + Files.exists(output_mp3)); // 第一次为false, 往后为true
+    //   output_mp3 = Files.write(output_mp3, byte_data,StandardOpenOption.CREATE,StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING); // '复制的文件'不存在即创建, 否则自动打开, 打开后'清空原内容', 重新写入新byte[]数据
+    //   // System.out.println("现在往其中写入了数据, "+ output_mp3.getFileName() + " 现在存在吗? " + Files.exists(output_mp3) ); // true
+    // }else{
+    //   System.out.println("没有找到文件 " + byte_mp3.getFileName() + ", byte复制操作已跳过");
+    // }
+    
 
+    // 利用.copy()方法直接自动复制 (我靠, 两行代码, 省事多了)
+    // Path output_file = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files/new_folder","output.mp3");
+    // output_file = Files.copy(byte_mp3, output_file,StandardCopyOption.REPLACE_EXISTING); // .copy()会返回成功复制的 Path对象 (这里就是上面的output_file);
+
+    // 利用.move()方法移动/重命名文件 
+    Path rename_mp3 = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files", "Angelic Layer.mp3");
+    // rename_mp3 = Files.move(byte_mp3, rename_mp3, StandardCopyOption.ATOMIC_MOVE); // 重命名文件
+    // Path new_path = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files/new_folder", "SHIKI.mp3");
+    // Files.move(rename_mp3,new_path,StandardCopyOption.ATOMIC_MOVE); // 重命名 + 移动文件, 一气呵成!
 
   } // main结束
   
