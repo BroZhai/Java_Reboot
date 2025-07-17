@@ -10,6 +10,7 @@ import java.nio.file.Paths; // 只有 Paths类的静态方法.get / .of 才能�
 
 // 其他类
 import java.util.ArrayList; // ArrayList类
+import java.util.Scanner; // Scanner 获取 System.in作为输入流
 
 public class Files_and_Path {
   // 我们来实践一下这个Java 7+之后专门出现的对'文件/目录'操作的类, 据说有更多的功能, 现在实际项目开发常用这个, 操作还内置了'缓存空间'
@@ -28,7 +29,7 @@ public class Files_and_Path {
       System.out.println("取得的文件名为: " + test_file_path.getFileName());
       System.out.println("该文件'所处目录'的上一级目录为: " + test_file_path.getParent().getParent()); // 文件位于 Java_Reboot\File_IO_Experiment\Nio_Files\test.txt
       System.out.println("该文件共有 " + test_file_path.getNameCount() + " 级目录(文件自身也算一级)");
-      System.out.println("该文件取得'第2级'的目录为: " + test_file_path.getName(2));
+      System.out.println("该文件取得'第2级'的目录为: " + test_file_path.getName(2)); // index从0开始数
       Path test_abs_path = test_file_path.toAbsolutePath();
       System.out.println("尝试转成的绝对路径为: " + test_abs_path); // 成功
       System.out.println("从绝对路径中取得的'根目录'为: " + test_abs_path.getRoot());
@@ -79,7 +80,27 @@ public class Files_and_Path {
       System.out.println("第"+counter+"行的内容为: " + content);
       counter++;
     }
-  }
+
+    System.out.println();
+    Path byte_mp3 = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files","test_music.mp3"); // 玩点花式路径拼接
+    // System.out.println(Files.exists(byte_mp3));
+    boolean is_mp3_exist = Files.exists(byte_mp3);
+    if(is_mp3_exist){
+      // 手动复制 (实验readAllBytes() 和 write())
+      System.out.println("检测到 " + byte_mp3.getFileName() + "存在! 正在读取byte信息至数组...");
+      byte[] byte_data = Files.readAllBytes(byte_mp3); // 这个操作内置了'操作缓存'
+      System.out.println("完成了对 " + byte_mp3.getFileName() + " 的读取!");
+      Scanner filename_input = new Scanner(System.in);
+      System.out.print("请输入新mp3的文件名(仅名称即可)"); // 这里为了简单做实验, 就不做校验了 :3
+      String new_mp3_name = filename_input.nextLine();
+      Path output_mp3 = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files", new_mp3_name+".mp3"); // 这里补充后缀
+      Files.write(output_mp3, byte_data)
+    }else{
+      System.out.println("没有找到文件 " + byte_mp3.getFileName() + ", byte复制操作已跳过");
+    }
+
+
+  } // main结束
   
 
  
