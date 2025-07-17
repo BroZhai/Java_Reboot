@@ -7,6 +7,7 @@ import java.nio.file.DirectoryNotEmptyException; // 文件夹非空
 import java.nio.file.Files; // 导入 Files类
 import java.nio.file.Path; // 导入 Path类
 import java.nio.file.Paths; // 只有 Paths类的静态方法.get / .of 才能创建Path类对象
+import java.nio.file.StandardOpenOption; // Files类文件'打开'操作相关枚举常量 (定义不同的'打开方式')
 
 // 其他类
 import java.util.ArrayList; // ArrayList类
@@ -94,7 +95,9 @@ public class Files_and_Path {
       System.out.print("请输入新mp3的文件名(仅名称即可)"); // 这里为了简单做实验, 就不做校验了 :3
       String new_mp3_name = filename_input.nextLine();
       Path output_mp3 = Paths.get("Java_Reboot/File_IO_Experiment/Nio_Files", new_mp3_name+".mp3"); // 这里补充后缀
-      Files.write(output_mp3, byte_data)
+      // System.out.println("新建的创建的 " + output_mp3.getFileName() + " 现在存在吗? " + Files.exists(output_mp3)); // 第一次为false, 往后为true
+      output_mp3 = Files.write(output_mp3, byte_data,StandardOpenOption.CREATE,StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING); // '复制的文件'不存在即创建, 否则自动打开, 打开后'清空原内容', 重新写入新byte[]数据
+      // System.out.println("现在往其中写入了数据, "+ output_mp3.getFileName() + " 现在存在吗? " + Files.exists(output_mp3) ); // true
     }else{
       System.out.println("没有找到文件 " + byte_mp3.getFileName() + ", byte复制操作已跳过");
     }
