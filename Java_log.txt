@@ -148,3 +148,6 @@
 成功简单的对Java内置的序列化类ObjectInput/OutputStream进行了实验, 知道了transient关键字的妙用!
 简单了解了一下Gradle是什么, 我嘞个豆, 又是个超级大坑, 明天跳吧 :3
 2025.07.17
+
+大体了解了build.gradle里面不同的区域以及一些关键字, 成功安装了Gradle
+2025.07.18
