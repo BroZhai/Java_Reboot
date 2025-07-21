@@ -155,3 +155,6 @@
 尝试使用gradle Build时发生严重事故, 而且gradle并不是一个'小知识点', 要打好Maven的基础后有时间再来看看Maven
 让我们来看看Maven
 2025.07.18
+
+由于不可抗力的shit network, maven研究暂时搁置, 接着来看看Java网络编程
+2025.07.21
