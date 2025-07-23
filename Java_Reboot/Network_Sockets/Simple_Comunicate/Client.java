@@ -1,4 +1,4 @@
-package Java_Reboot.Network_Sockets;
+package Java_Reboot.Network_Sockets.Simple_Comunicate;
 
 // Java 网络相关
 import java.net.InetAddress;
