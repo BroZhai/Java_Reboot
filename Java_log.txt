@@ -172,4 +172,5 @@
 2025.07.22
 
 成功查资料'自行'勉强的实现了客户端 至 服务端的通信, 同时认识了InputStreamReader 和 OutputStreamWriter这两个类, 之前看InputStream和OutputStream的时候疏忽了 XD
+脑袋灵光了一下, 好像修好了服务器'遍历char[]元素'到 StringBuilder的问题
 2025.07.23
