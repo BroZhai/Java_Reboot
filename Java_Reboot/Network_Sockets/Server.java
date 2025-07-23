@@ -18,12 +18,15 @@ public class Server {
     System.out.println("测试: " + data);
     StringBuilder sb = new StringBuilder(5);
     InputStreamReader reader = new InputStreamReader(data); // InputStreamReader, 将 输入的'字符流' 转换为 '字节流'
-    char[] string_buffer = new char[1024]; // 设置读取缓存 (InputStream是'字节'流)
+    char[] string_buffer = new char[40]; // 设置读取缓存 (InputStream是'字节'流)
     int read_value;
     try {
       while ((read_value = reader.read(string_buffer)) != -1) {
-        String current_content = Arrays.toString(string_buffer);
-        sb.append(current_content);
+        for(char i : string_buffer){
+          sb.append(i);
+        }
+        // String current_content = Arrays.toString(string_buffer);
+        
       }
     } catch (IOException e) {
       System.out.println("发生了IO异常!");
