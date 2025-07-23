@@ -28,7 +28,7 @@ public class Server {
           sb.append(string_buffer,0,read_value);
           System.out.println("已从InputStream中读取了 " + read_value + " Bytes, 这是第 " + test_counter + " 次");
           test_counter++;
-          if(sb.toString().contains("\n")) break;
+          if(sb.toString().contains("\n")) break; // '手动结束'标记, 告知read读到'换行\n'时 停止read, 不然read会'一直读'导致阻塞...
         // String current_content = Arrays.toString(string_buffer);
         
       }
