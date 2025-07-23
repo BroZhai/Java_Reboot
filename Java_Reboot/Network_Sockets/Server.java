@@ -35,6 +35,7 @@ public class Server {
     } catch (IOException e) {
       System.out.println("发生了IO异常!");
     }
+    System.out.println("服务器读取完成");
     return sb.toString();
   }
 
