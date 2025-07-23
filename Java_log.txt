@@ -170,3 +170,6 @@
 整理好了Java中Socket编程的相关笔记, 准备开始实践
 踩了一个超级深坑, Socket的部分方法在不同'情景'返回的会是'对方Socket'的内容, 给哥们绕了一个多小时, 简单进行了对应的实验, 明天进一步研究'传数据'
 2025.07.22
+
+成功查资料'自行'勉强的实现了客户端 至 服务端的通信, 同时认识了InputStreamReader 和 OutputStreamWriter这两个类, 之前看InputStream和OutputStream的时候疏忽了 XD
+2025.07.23
