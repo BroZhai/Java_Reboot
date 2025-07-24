@@ -43,6 +43,10 @@ public class Functional_Interfaces {
     // Predicate<Integer> odd_judger = even_judger.negate();  // 就是even_judger的'结果取反'
     System.out.println("该base值是偶数吗? " + even_judger.test(generated_value));
   
+
+    // 方法引用 实验区(针对Function)
+    Function<Double, Double> get_sqrt = (value) -> Math.sqrt(value);
+
   } // main函数结束
 
 
