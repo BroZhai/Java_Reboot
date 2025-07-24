@@ -19,7 +19,13 @@ public class Server {
 
   }
   
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException{
+    InetAddress server_ip = InetAddress.getByName("localhost");
+    ServerSocket server = new ServerSocket(13145,30,server_ip);
+    while (true) {
+      Socket client_socket = server.accept();
+      System.out.println("收到来自端口 " + client_socket.getPort() + " 的连接请求");
+    }
     
   }
 }
