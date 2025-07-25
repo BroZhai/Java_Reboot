@@ -6,10 +6,38 @@ import java.util.function.Supplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+// 其他常用的函数式接口
+import java.util.function.BiFunction;
+
+
 // 其他工具
 import java.lang.Math;
 
 public class Functional_Interfaces {
+
+  /* static class Person{ // 如果要在内部类上应用函数接口, 需要声明为static, 这是'函数式接口'的要求, 不然得单独写一个class
+    public static String name;
+    public static int age;
+
+    public Person(String name, int age){
+      this.name = name;
+      this.age = age;
+    }
+
+    public void intro(){
+      System.out.println("你好, 我是" + this.name);
+    }
+
+    public boolean reset_name(String rename){ // 一会儿用 实例对象::方法 进行引用
+      this.name = rename;
+      System.out.println("已成功重命名为: " + this.name);
+      intro();
+      return true;
+    }
+    
+
+  }
+*/
 
   // 在本class中, 我们来研究一下Java的内置'函数式接口'Functional_Interfaces (就会外面自己定义的Calculator类似, 但是是'内置的')
   public static void main(String[] args) {
@@ -44,8 +72,49 @@ public class Functional_Interfaces {
     System.out.println("该base值是偶数吗? " + even_judger.test(generated_value));
   
 
-    // 方法引用 实验区(针对Function)
-    Function<Double, Double> get_sqrt = (value) -> Math.sqrt(value);
+    /* 方法引用 实验区(针对Function, 但是其他的函数接口也都能使用) */
+    System.out.println("\n现在开始'方法引用'实验");
+
+    // 针对'已有类'的静态方法
+    Function<Double, Double> get_sqrt = Math::sqrt; // Math.sqrt默认直接接受'一个参'
+    System.out.println("base值 "+ generated_value +" 取根号的结果为: " + get_sqrt.apply((double)generated_value));
+    // 等价于
+    // Function<Double, Double> get_sqrt = (value) -> Math.sqrt(value);
+
+    System.out.println();
+    // 引用'已有实例对象'的方法 (这里引Person类的 reset_name方法)
+    Person cirno = new Person("Big Baka", 9);
+    cirno.intro();
+    Function<String, Boolean> person_reset_name = cirno::reset_name;  // 等价于 () -> cirno.reset_name();
+    person_reset_name.apply("Cirno"); // 重命名对象为 Cirno
+    person_reset_name.apply("PurpleCandy");  // 再次重命名对象 为 PurpleCandy
+
+    System.out.println();
+    // 引用'输入参'类型(大类)中定义 的方法 
+    Person cyan_dog = new Person("Pinkcandy", 18);
+    Person yellow_cake = new Person("Niko", 16);
+    Function<Person, String> get_age = Person::get_info;
+    System.out.println(get_age.apply(cyan_dog));
+    System.out.println(get_age.apply(yellow_cake));
+
+    // 小实验: 分清 '对象方法' 和 输入参大类的方法
+    // String test_string = "baka";
+    // Function<String, Integer> get_string_length = test_string::length; // 错误的写法 , 等价于 "baka".length(), 这里需要声明为'输入参'的大类 String
+    // get_string_length.apply("wowowowo");
+
+    System.out.println();
+    // 引用类的'构造函数 创建对象'
+    BiFunction<String, Integer, Person> create_person = Person::new; // 类名::new (前面只管定好 '传入参'的类型 就好了)
+    Person hugo = create_person.apply("Hugo", 23);
+    System.out.println(hugo.get_info());
+    Person ug = create_person.apply("油雞", 21);
+    System.out.println(ug.get_info());
+
+    // andThen 组合用法实践
+    Function<String, String> no_space = String::trim; // 去除首尾空格
+    Function<String, String> to_uppercase = String::toUpperCase;
+    Function<String, String> trim_then_upper = no_space.andThen(to_uppercase);
+    System.out.println(trim_then_upper.apply("  baka     "));  // 输出BAKA
 
   } // main函数结束
 
