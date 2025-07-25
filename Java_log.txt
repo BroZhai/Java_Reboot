@@ -196,4 +196,5 @@
 哦差点忘了, Collectors工具是专门用来处理Stream流的, 重新回顾了下Stream流的认知, 一会儿继续
 花了两个钟大幅整理了Stream类相关的笔记, 还差点小尾巴
 我靠半路杀出来个Optional类
+简单梳理好了Optional类的笔记, 等整理完Stream类之后来进行统一实验 (别忘了还有Collectors类
 2025.07.25
