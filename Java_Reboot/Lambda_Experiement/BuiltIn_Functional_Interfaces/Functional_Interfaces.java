@@ -8,10 +8,14 @@ import java.util.function.Predicate;
 
 // 其他常用的函数式接口
 import java.util.function.BiFunction;
-
-
+import java.util.function.UnaryOperator;
+import java.util.Comparator; // 常配合Collections类进行使用, 马上就看
+import java.util.List;
 // 其他工具
 import java.lang.Math;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class Functional_Interfaces {
 
@@ -115,6 +119,25 @@ public class Functional_Interfaces {
     Function<String, String> to_uppercase = String::toUpperCase;
     Function<String, String> trim_then_upper = no_space.andThen(to_uppercase);
     System.out.println(trim_then_upper.apply("  baka     "));  // 输出BAKA
+
+
+    System.out.println();
+    // 其他的函数接口测试
+    UnaryOperator<Integer> double_value = value -> value*2;
+    System.out.println("base数 " + generated_value + " 的两倍'操作值'为: " + double_value.apply(generated_value));
+
+    
+    Comparator<Person> compare_and_swap = (p1, p2) -> { // 这里的Comparator<> 仅用于展示结构, 实际使用是大部分时候用的是 Comparactor<>类的'静态方法'
+      return p1.get_age() - p2.get_age(); // 正值 p1 排在 p2 后, 负值则是 p1排在前 (正值默认升序, '整体取反'即为降序)
+      // return -(p1.get_age() - p2.get_age()); // 降序
+    };
+
+    List<Person> person_list = Arrays.asList(hugo, ug, yellow_cake, cyan_dog, cirno); // 创建一个person List, 准备用于排序 (配合使用Comparator)
+    System.out.print("当前person_list中的年龄排序为: ");
+    person_list.forEach( person -> System.out.print(person.get_age() + ", ")); // 遍历list中 每个Person的age (在里面sout, 不在外面)
+    person_list.sort(Comparator.comparing(Person::get_age)); // 默认是升序
+    System.out.print("\n排完序的结果为: ");
+    person_list.forEach( person -> System.out.print(person.get_age() + ", ")); // 比较的是Person年龄的大小作为swap条件, 
 
   } // main函数结束
 

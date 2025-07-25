@@ -18,6 +18,10 @@ public class Person {
       return this.name + "的年龄为: " + this.age;
     }
 
+    public int get_age(){
+      return this.age;
+    }
+
     public boolean reset_name(String rename){ // 一会儿用 实例对象::方法 进行引用
       this.name = rename;
       System.out.println("已成功重命名为: " + this.name);
