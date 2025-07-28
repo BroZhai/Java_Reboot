@@ -19,9 +19,11 @@ public class Stream_and_Collectors {
     Stream<?> empty_stream = Stream.empty(); // 创建一个'空流' (毛都木有)
 
     // 看看还有哪些其他的常用静态方法
-    Supplier<Integer> get_random_int = () -> (int)Math.random()*10+1; // 随机生成1-10 的Supplier
-    List<Integer> five_random_integers = Stream.generate(get_random_int).limit(5).collect(Collectors.toList());
+    Supplier<Integer> get_random_int = () -> (int) (Math.random()*10) +1; // 随机生成1-10 的Supplier (靠, Math.random()应该是先算再转, 之后注意运算优先级问题)
+    List<Integer> five_random_integers = Stream.generate(get_random_int).limit(5).collect(Collectors.toList()); // .generate()生成无限长度的流, limit()进行次数限制
     System.out.println();
     five_random_integers.forEach( System.out::print );
-  }
+
+    
+  } // main函数结束
 }
