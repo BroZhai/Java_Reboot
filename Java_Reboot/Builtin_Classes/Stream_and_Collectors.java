@@ -7,13 +7,20 @@ import java.util.stream.Collectors; // 导入Collectors工具包
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.function.Predicate;
+import java.util.function.Function;
 
 // 其他工具类
 import java.lang.Math;
+import java.util.Arrays;
 import java.util.List;
+
+// 导入自定义测试类Person
+import Java_Reboot.Lambda_Experiement.BuiltIn_Functional_Interfaces.Person;
 
 public class Stream_and_Collectors {
   // 我们来看一下 和'操作流' 密切相关Stream类
+
+  // 测试类
 
   public static void main(String[] args) {
     // Stream类没有构造函数, 依赖'静态方法'进行'流实例'的创建 (或者是用对象的.toStream()方法, 如有)
@@ -47,6 +54,8 @@ public class Stream_and_Collectors {
     
     // Stream类中'实操方法'
     // 中间操作 (针对流元素的各种操作, 返回一个新Stream对象), 注意这里只是'条件定义', 在'终端操作'中才会正式开始拿数据
+
+    // filter()过滤原数据流, 得到新数据流stream对象, 同时使老的数据流失效!
     UnaryOperator<Integer> ascending_number = (input_value) -> input_value+1;
     Stream<Integer> original_stream = Stream.iterate(1, ascending_number).limit(10);
 
@@ -57,11 +66,21 @@ public class Stream_and_Collectors {
     original_stream = Stream.iterate(1, ascending_number).limit(10); // 重新赋值 original_stream, 一会儿被even_num_only_stream对象'正式拿数据'(会被再次消费)
 
     Predicate<Integer> filter_even_num = (current_num) -> current_num%2==0;
-    Stream<Integer> even_num_only_stream = original_stream.filter(filter_even_num); 
+    Stream<Integer> even_num_only_stream = original_stream.filter(filter_even_num); // 注意, 这里的filter也会'消费'原数据流对象, 是个坑
     System.out.print("\n使用Predicat+filter()过滤后的流为: ");
     even_num_only_stream.forEach(val -> System.out.print(val + " "));
 
+    // map()计算, 操作, 提取流中元素的属性
+    Person candy = new Person("Pinkcandy", 18);
+    Person taike = new Person("Taike", 19);
+    Person bing = new Person("IceWing", 22);
 
-    
+    List<Person> person_list = Arrays.asList(candy, taike, bing);
+    Function<Person,String> get_name = Person::get_name;
+    List<String> names_in_list = person_list.stream().map(get_name).collect(Collectors.toList());
+    System.out.print("\n从person_list的stream中取得的用map()取得的人名为: ");
+    names_in_list.forEach((name) -> System.out.print(name + " "));
+    System.out.println();
+
   } // main函数结束
 }
