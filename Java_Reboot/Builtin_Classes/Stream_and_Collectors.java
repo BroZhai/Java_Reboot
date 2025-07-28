@@ -142,5 +142,9 @@ public class Stream_and_Collectors {
     person_stream.distinct().forEach((person_obj) -> System.out.print(person_obj.get_name() + " ")); // 后面的bing bing candy candy被移除了, 但是tech的Taike 仍然存在(tech是独立对象!)
     System.out.println();
 
+
+    /*终端操作*/
+    
+
   } // main函数结束
 }
