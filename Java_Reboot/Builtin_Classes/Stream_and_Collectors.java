@@ -1,6 +1,7 @@
 package Java_Reboot.Builtin_Classes;
 
 import java.util.stream.Stream; // 导入Stream类
+import java.util.stream.Collector;
 import java.util.stream.Collectors; // 导入Collectors工具包
 
 // 配合使用的'函数式接口'
@@ -8,10 +9,12 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.function.Predicate;
 import java.util.function.Function;
+import java.util.function.Consumer;
 
 // 其他工具类
 import java.lang.Math;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 // 导入自定义测试类Person
@@ -19,8 +22,6 @@ import Java_Reboot.Lambda_Experiement.BuiltIn_Functional_Interfaces.Person;
 
 public class Stream_and_Collectors {
   // 我们来看一下 和'操作流' 密切相关Stream类
-
-  // 测试类
 
   public static void main(String[] args) {
     // Stream类没有构造函数, 依赖'静态方法'进行'流实例'的创建 (或者是用对象的.toStream()方法, 如有)
@@ -53,7 +54,7 @@ public class Stream_and_Collectors {
     System.out.println("\n\n我们来看看Stream类中的'实操方法': ");
     
     // Stream类中'实操方法'
-    // 中间操作 (针对流元素的各种操作, 返回一个新Stream对象), 注意这里只是'条件定义', 在'终端操作'中才会正式开始拿数据
+    /* 中间操作 (针对流元素的各种操作, 返回一个新Stream对象), 注意这里只是'条件定义', 在'终端操作'中才会正式开始拿数据 */
 
     // filter()过滤原数据流, 得到新数据流stream对象, 同时使老的数据流失效!
     UnaryOperator<Integer> ascending_number = (input_value) -> input_value+1;
@@ -66,11 +67,33 @@ public class Stream_and_Collectors {
     original_stream = Stream.iterate(1, ascending_number).limit(10); // 重新赋值 original_stream, 一会儿被even_num_only_stream对象'正式拿数据'(会被再次消费)
 
     Predicate<Integer> filter_even_num = (current_num) -> current_num%2==0;
-    Stream<Integer> even_num_only_stream = original_stream.filter(filter_even_num); // 注意, 这里的filter也会'消费'原数据流对象, 是个坑
+    Stream<Integer> even_num_only_stream = original_stream.filter(filter_even_num); // 注意, 这里的filter也会'消费'原数据流对象(original_stream), 是个坑 
     System.out.print("\n使用Predicat+filter()过滤后的流为: ");
     even_num_only_stream.forEach(val -> System.out.print(val + " "));
 
+    // skip()跳过前n个元素
+    System.out.println();
+    original_stream = Stream.iterate(1, ascending_number).limit(10);
+    System.out.print("original_stream跳过前五个元素开始遍历: ");
+    original_stream.skip(5).forEach((value) -> System.out.print(value + " "));
+
+    // peek()在某一时刻(状态)对元素的内容进行查看
+    System.out.println("\n");
+    original_stream = Stream.iterate(1, ascending_number).limit(5); 
+    System.out.print("重新赋值original: ");
+    original_stream.forEach((value) -> {System.out.print(value + " ");});
+    original_stream = Stream.iterate(1, ascending_number).limit(5); // 重新赋值
+    System.out.println();
+    Consumer<Integer> before = (value) -> System.out.print("当前值: " + value);
+    Consumer<Integer> after = (value) -> System.out.print(", 修改后: " + value + "\n");
+    List<Integer> result = original_stream.peek(before).map((value) -> value + 1).peek(after).collect(Collectors.toList()); // 注意, peek()单用不生效, 需要在结尾带一个'终端操作'才能'带飞'
+    System.out.print("最终输出List: ");
+    result.forEach((value) -> System.out.print(value + " "));
+    
+
+
     // map()计算, 操作, 提取流中元素的属性
+    System.out.println();
     Person candy = new Person("Pinkcandy", 18);
     Person taike = new Person("Taike", 19);
     Person bing = new Person("IceWing", 22);
@@ -80,6 +103,43 @@ public class Stream_and_Collectors {
     List<String> names_in_list = person_list.stream().map(get_name).collect(Collectors.toList());
     System.out.print("\n从person_list的stream中取得的用map()取得的人名为: ");
     names_in_list.forEach((name) -> System.out.print(name + " "));
+    System.out.println("\n");
+
+    // flatMap()处理嵌套元素流
+    List<List<String>> nested_list = Arrays.asList( // 外部List
+      Arrays.asList("A","B"), // 内部List
+      Arrays.asList("C","D")
+      );
+    List<String> content_in_nested_list = nested_list.stream().flatMap((inner_list) -> { // nested_list.stream() 外部stream
+      return inner_list.stream(); // 内部stream
+    }).collect(Collectors.toList());
+    System.out.print("content_in_nested_list的内容为: " );
+    content_in_nested_list.forEach((value) -> System.out.print(value + " "));
+
+    // sorted() 排序流元素
+    System.out.println();
+    Comparator<String> string_len_compare = Comparator.comparingInt(String::length); // 比较字符串长度 & 排序 的 Comparator(升序)
+    Stream<String> name_stream = Stream.of("baka","pinkcandy", "IceWing", "cirno");
+    System.out.print("当前name_stream中有: ");
+    name_stream.forEach((name) -> System.out.print(name +" "));
+    System.out.println();
+    name_stream = Stream.of("baka","pinkcandy", "IceWing", "cirno"); // 重新赋值, 上面forEach被消耗了
+    System.out.print("利用sorted()排序后的内容为: ");
+    name_stream.sorted(string_len_compare).forEach(
+      (name) -> System.out.print(name + " ")
+    );
+    System.out.println();
+
+    // distinct() 排除重复元素
+    System.out.println();
+    Person tech = new Person("Taike", 19); // Taike的'小号', 看看会不会被移除 (并不会, 这是一个'独立的对象'!)
+    Stream<Person> person_stream = Stream.of(bing, taike, candy, tech , bing, bing, candy, candy);
+    System.out.print("person_stream中有: ");
+    person_stream.forEach((person_obj) -> System.out.print(person_obj.get_name() + " "));
+    System.out.println();
+    person_stream = Stream.of(bing, taike, candy, tech); // 重新赋值
+    System.out.print("distinct()后的内容有: ");
+    person_stream.distinct().forEach((person_obj) -> System.out.print(person_obj.get_name() + " ")); // 后面的bing bing candy candy被移除了, 但是tech的Taike 仍然存在(tech是独立对象!)
     System.out.println();
 
   } // main函数结束
