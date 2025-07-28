@@ -6,6 +6,7 @@ import java.util.stream.Collectors; // 导入Collectors工具包
 // 配合使用的'函数式接口'
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.function.Predicate;
 
 // 其他工具类
 import java.lang.Math;
@@ -43,7 +44,23 @@ public class Stream_and_Collectors {
     concated_list.forEach((current_value) -> System.out.print(current_value + " ")); // 五个基数, 五个偶数 流拼接
 
     System.out.println("\n\n我们来看看Stream类中的'实操方法': ");
+    
     // Stream类中'实操方法'
+    // 中间操作 (针对流元素的各种操作, 返回一个新Stream对象), 注意这里只是'条件定义', 在'终端操作'中才会正式开始拿数据
+    UnaryOperator<Integer> ascending_number = (input_value) -> input_value+1;
+    Stream<Integer> original_stream = Stream.iterate(1, ascending_number).limit(10);
+
+    // List<Integer> original_stream_list = odd_stream.toList(); // 注意, toList()会消费 Stream对象 ! (后面尝试再用会报错, 抛出java.lang.IllegalStateException)
+    System.out.print("当前orginal_stream的流中有: ");
+    original_stream.forEach((val) -> System.out.print(val + " ")); // original_stream对象被消费
+    // even_num_only_stream.toList().forEach(System.out::print); // 报错, 此时even流才会'开始'去拿数据, 结果发现origin_stream对象已经被消费了(上面的forEach)
+    original_stream = Stream.iterate(1, ascending_number).limit(10); // 重新赋值 original_stream, 一会儿被even_num_only_stream对象'正式拿数据'(会被再次消费)
+
+    Predicate<Integer> filter_even_num = (current_num) -> current_num%2==0;
+    Stream<Integer> even_num_only_stream = original_stream.filter(filter_even_num); 
+    System.out.print("\n使用Predicat+filter()过滤后的流为: ");
+    even_num_only_stream.forEach(val -> System.out.print(val + " "));
+
 
     
   } // main函数结束
