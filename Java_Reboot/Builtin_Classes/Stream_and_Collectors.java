@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional; // 数据'可能有可能无'
 
 // 导入自定义测试类Person
@@ -205,10 +206,16 @@ public class Stream_and_Collectors {
     System.out.println("\n现在我们来看看");
     /*  toList() / toSet() 上面用到过了, 这里skip */
 
-    // toCollection 转换为抽象Collection集合类, 或者是声明成其子类 (如ArrayList)
+    // toCollection() 转换为抽象Collection集合类, 或者是声明成其子类 (如ArrayList)
     person_stream = Stream.of(bing, candy, cirno, taike);
     ArrayList<Person> person_ArrayList = person_stream.collect(Collectors.toCollection(ArrayList::new)); // 转为Collection类, 但声明了具体要转的'子对象'为ArrayList, 返回ArrayList对象
     System.out.println("取得peron_ArrayList下标2的person名称为: " + person_ArrayList.get(2).get_name());
+
+    // toMap() 转换为Map键值对映射, 利用Function直接搞俩'恒等函数'分别作为 键 值
+    person_stream = Stream.of(bing, candy, cirno, taike);
+    Map<String, Integer> person_map = person_stream.collect(Collectors.toMap(Person::get_name, Person::get_age)); // 指定Person对象 '人名为键', 年龄为值
+    // System.out.println(person_map.toString());
+    System.out.println(person_map.get(taike.get_name()));
 
 
   } // main函数结束
