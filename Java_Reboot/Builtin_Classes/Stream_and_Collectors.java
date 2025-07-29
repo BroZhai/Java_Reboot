@@ -1,14 +1,15 @@
 package Java_Reboot.Builtin_Classes;
 
 import java.util.stream.Stream; // 导入Stream类
-import java.util.stream.Collector;
 import java.util.stream.Collectors; // 导入Collectors工具包
+import java.util.stream.Collector; // Collectors的父类接口, 没有用到但是要了解
 
 // 配合使用的'函数式接口'
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.function.Predicate;
 import java.util.function.Function;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 
 // 其他工具类
@@ -16,6 +17,7 @@ import java.lang.Math;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional; // 数据'可能有可能无'
 
 // 导入自定义测试类Person
 import Java_Reboot.Lambda_Experiement.BuiltIn_Functional_Interfaces.Person;
@@ -142,9 +144,60 @@ public class Stream_and_Collectors {
     person_stream.distinct().forEach((person_obj) -> System.out.print(person_obj.get_name() + " ")); // 后面的bing bing candy candy被移除了, 但是tech的Taike 仍然存在(tech是独立对象!)
     System.out.println();
 
+    System.out.println("\n接下来让我们看看'终端操作'");
+    /*终端操作 (这里单独把.collect()方法拎出来, 放在最下面和Collectors工具类一起搞)*/
+    // reduce() Stream流的归约操作
+    BinaryOperator<Integer> descend_pace = (current_value, next_value) -> current_value - next_value;
+    Stream<Integer> altitude_stream = Stream.of(2500, 500, 400, 300, 200, 100, 50, 30, 20, 10, 5); // Retard!!
+    Optional<Integer> last_altitude = altitude_stream.reduce(descend_pace); // 注意此时altitude_stream已被消耗!
+    last_altitude.ifPresent((last_value) -> {
+      System.out.println("最后的高度值存在! 值为: " + last_value); // 885 correct!
+    });
 
-    /*终端操作*/
+    // count() 统计Stream流元素个数
+    person_stream = Stream.of(bing, taike, candy);
+    int headcounts = (int)person_stream.count(); // 默认返回long类型, 可以自行转成int
+    System.out.println("headcounts中共有 " + headcounts + " 个Baka");
+
+    // anyMatch() 任意true -> true / noneMatch() 全false -> true, AllMatch() 全true -> true
+    person_stream = Stream.of(bing, taike, candy);
+    Predicate<Person> candy_exists = (current_person) -> {
+      return  current_person.get_name().equals("Pinkcandy");
+    };
+    boolean pinkcandy = person_stream.anyMatch(candy_exists); // 只要有元素匹配true    
+    if (pinkcandy) {
+      System.out.println("PinkCandy存在!");
+    }
+
+    person_stream = Stream.of(bing, taike); // 移除candy, 测试noneMatch()
+    boolean no_pinkcandy = person_stream.noneMatch(candy_exists);  // 全部匹配false，返回true
+    if(no_pinkcandy){
+      System.out.println("修改后的person_stream中没有匹配到Pinkcandy");
+    }
+
+    // findFirst() 找到返回第一个元素 / findAny() '针对并行流'随机返回一个元素 (顺序流永远都是第一个, 了解即可)
+    Person cirno = new Person("Baka", 9);
     
+    person_stream = Stream.of(bing, candy, cirno, taike);
+    // Optional<Person> first_person = person_stream.findAny();
+    Optional<Person> first_person = person_stream.findFirst();
+    first_person.ifPresent( (person_obtained) -> {
+      System.out.println("流中的第一个幸运儿为: " + person_obtained.get_name());
+    });
+
+    System.out.println();
+    // min() / max() 取最小最大值方法, 需传入Comparator配合进行排序
+    Stream<Integer> random_ints = Stream.generate(get_random_int).limit(7); // 引用35行定义的'取随机数方法', 生成7个 1-10的随机数
+    List<Integer> ints_list = random_ints.collect(Collectors.toList()); // 将取得的随机结果放在list中 (备份stream流中的数据, 防止'关闭'之后找不回来了 XD)
+    System.out.print("本次生成的random_ints流为: ");
+    ints_list.forEach((current_value) -> System.out.print(current_value + " "));
+
+    random_ints = ints_list.stream(); // 重新赋值数据流, 准备找最小值
+    Optional<Integer> obtained_min_value = random_ints.min(Comparator.naturalOrder()); // 自然升序排序, 哥们懒得再写一遍了 XD (注意random_ints流被消耗)
+    obtained_min_value.ifPresent( (value) -> {
+      System.out.println(", 其中最小的值为: " + value);
+    });
+
 
   } // main函数结束
 }
