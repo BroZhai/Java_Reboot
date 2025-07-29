@@ -215,7 +215,15 @@ public class Stream_and_Collectors {
     person_stream = Stream.of(bing, candy, cirno, taike);
     Map<String, Integer> person_map = person_stream.collect(Collectors.toMap(Person::get_name, Person::get_age)); // 指定Person对象 '人名为键', 年龄为值
     // System.out.println(person_map.toString());
-    System.out.println(person_map.get(taike.get_name()));
+    System.out.println(person_map.get(taike.get_name())); // 取得Map中键名为: Taike 的值(年龄), 19 ; 我靠这块补了我半天
+
+    // joining() 拼接, 自定义元素流'分隔符', 前后缀符号
+    Stream<String> customized_stream = Stream.of("A","B","C");
+    String combined_str = customized_stream.collect(Collectors.joining()); // 直接拼接
+    System.out.println("customized_stream用Collectors.joining()直接拼接的结果为: " + combined_str);
+    customized_stream = Stream.of("A","B","C");
+    String delimiter_prefix_suffix = customized_stream.collect(Collectors.joining("-","[","]")); // 指定分隔符为 -, 前缀 [ , 后缀 ]
+    System.out.println("自定义分隔符, 前/后缀返回的结果为: " + delimiter_prefix_suffix);
 
 
   } // main函数结束
