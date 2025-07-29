@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 
 // 其他工具类
 import java.lang.Math;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -197,6 +198,17 @@ public class Stream_and_Collectors {
     obtained_min_value.ifPresent( (value) -> {
       System.out.println(", 其中最小的值为: " + value);
     });
+
+
+
+    // Collectors工具类方法 (只用静态方法), 常搭配 Stream中的 .collect()终端操作一齐使用
+    System.out.println("\n现在我们来看看");
+    /*  toList() / toSet() 上面用到过了, 这里skip */
+
+    // toCollection 转换为抽象Collection集合类, 或者是声明成其子类 (如ArrayList)
+    person_stream = Stream.of(bing, candy, cirno, taike);
+    ArrayList<Person> person_ArrayList = person_stream.collect(Collectors.toCollection(ArrayList::new)); // 转为Collection类, 但声明了具体要转的'子对象'为ArrayList, 返回ArrayList对象
+    System.out.println("取得peron_ArrayList下标2的person名称为: " + person_ArrayList.get(2).get_name());
 
 
   } // main函数结束
