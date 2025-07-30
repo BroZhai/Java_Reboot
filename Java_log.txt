@@ -229,4 +229,5 @@ Collectors这个类的坑填了60%了, 明天继续
 补充了Files类的笔记, 被walkFileTree()方法饶了一会儿
 完成了客户端选择文件的'正则表达式判断', 这次用了do-while, 同时'判定方法'写的更精确了一些
 知道了InputStreamReader是可以配合BufferedReader一齐使用的, 在提供操作缓存的同时还支持了更多类型的读取! (InputStreamReader 和 BufferedReader同理)
+踩了一脚多个同socket对象的坑, 客户端'连接多次'时会导致连接重置! 让服务端'没反应过来' 从而丢数据, 明天继续想办法解决这个问题
 2025.07.30

@@ -3,6 +3,7 @@ package Java_Reboot.Network_Sockets.File_Upload;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.Files;
 
 import java.util.stream.*;
@@ -67,7 +68,26 @@ public class Client {
       }
     }while(!is_valid_input);
 
-  }
+    Path target_file = Paths.get(client_dir.toString(), input_filename);
+    byte[] file_content = Files.readAllBytes(target_file);
+    // to_server_socket = new Socket(server_ip,13145); // 创建多个 同socket对象 会导致连接重置! 会让服务端'没反应过来' 从而丢数据
+
+    OutputStream stream_to_server = to_server_socket.getOutputStream();
+    OutputStreamWriter filename_writer = new OutputStreamWriter(stream_to_server);
+    BufferedWriter writer = new BufferedWriter(filename_writer);
+    writer.write(input_filename + "\n");
+    writer.flush();
+    
+
+
+
+    // OutputStream stream_to_server = to_server_socket.getOutputStream();
+    // BufferedOutputStream stream_writer  = new BufferedOutputStream(stream_to_server);
+    // stream_writer.write(file_content);
+    // stream_writer.flush();
+
+    // stream_writer.write
+  } // main函数结束
   
   
 }
