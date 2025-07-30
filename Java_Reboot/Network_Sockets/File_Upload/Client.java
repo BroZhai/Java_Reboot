@@ -3,6 +3,7 @@ package Java_Reboot.Network_Sockets.File_Upload;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Path;
+import java.nio.file.Files;
 
 public class Client {
 
@@ -19,6 +20,9 @@ public class Client {
     }
     
     // 客户端选择文件并上传
+    // System.out.println(System.getProperty("user.dir"));
+    Path client_dir = Path.of(System.getProperty("user.dir"),"Java_Reboot","Network_Sockets","File_Upload","client_folder");
+    // System.out.println(Files.exists(client_dir)); 
     
 
   }
