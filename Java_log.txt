@@ -223,4 +223,5 @@ Collectors这个类的坑填了60%了, 明天继续
 
 实践了个Collectors的grouppingBy, 同时发现了遗漏的mapping()方法 XD
 完成了80%的Collectors方法实践, 一会儿继续
+大体完成了对Collectors工具类的实现, Stream操作也过完了, 补充修正了相关的笔记
 2025.07.30

@@ -289,7 +289,18 @@ public class Stream_and_Collectors {
 
     // .filtering() 同上, 这里是进行'临门一脚'的 最终过滤操作
     original_stream = Stream.iterate(1, ascending_number).limit(10);
-    // original_stream.collect(Collectors.filtering( (value) -> value>=5 ), Collectors.toList());
+    List<Integer> filtered_list = original_stream.collect(Collectors.filtering((value) -> value >= 5, Collectors.toList()));
+    System.out.println("利用Collectors.filtereing()过滤后输出到filtered_list中的内容为: " + filtered_list.toString());
+
+    // toUnmodfiableMap() 处理键值对后 返回一个不可修改的Map对象
+    person_stream =  Stream.of(candy, taike, bing);
+    Map<Integer, String> fixed_age_mapping =person_stream.collect(Collectors.toUnmodifiableMap(Person::get_age, Person::get_name, (old_val, new_val) -> new_val));
+    System.out.println("fixed_age_mapping中的内容为: " + fixed_age_mapping.toString());
+    try {
+      fixed_age_mapping.put(99, "Baka");
+    } catch (UnsupportedOperationException e) { // 对不可修改的Map对象尝试再次进行修改时, 会抛出java.lang.UnSupportedOperationException异常 (你想干甚?
+      System.out.println("出现UnsupportedOperationException异常! 你是不是尝试在修改一个不可改的对象O.o?");
+    }
 
 
   } // main函数结束
