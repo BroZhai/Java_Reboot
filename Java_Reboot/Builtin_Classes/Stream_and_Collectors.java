@@ -5,20 +5,21 @@ import java.util.stream.Collectors; // 导入Collectors工具包
 import java.util.stream.Collector; // Collectors的父类接口, 没有用到但是要了解
 
 // 配合使用的'函数式接口'
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
-import java.util.function.Predicate;
-import java.util.function.Function;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
+import java.util.function.Supplier; // 提供数据
+import java.util.function.UnaryOperator; // 一元操作
+import java.util.function.Predicate; // 条件判断
+import java.util.function.Function; // 输入&输出
+import java.util.Comparator; // 比较 & 排序
+import java.util.function.BinaryOperator; // 二元操作
+import java.util.function.Consumer; // 纯消耗数据
 
 // 其他工具类
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.IntSummaryStatistics; // Int类'统计工具'
+import java.util.List; // 纯List父类
+import java.util.Map; // 键值对父类
 import java.util.Optional; // 数据'可能有可能无'
 
 // 导入自定义测试类Person
@@ -203,7 +204,7 @@ public class Stream_and_Collectors {
 
 
     // Collectors工具类方法 (只用静态方法), 常搭配 Stream中的 .collect()终端操作一齐使用
-    System.out.println("\n现在我们来看看");
+    System.out.println("\n现在我们来看看Collectors工具类, 常配合stream.collect()方法使用");
     /*  toList() / toSet() 上面用到过了, 这里skip */
 
     // toCollection() 转换为抽象Collection集合类, 或者是声明成其子类 (如ArrayList)
@@ -224,6 +225,71 @@ public class Stream_and_Collectors {
     customized_stream = Stream.of("A","B","C");
     String delimiter_prefix_suffix = customized_stream.collect(Collectors.joining("-","[","]")); // 指定分隔符为 -, 前缀 [ , 后缀 ]
     System.out.println("自定义分隔符, 前/后缀返回的结果为: " + delimiter_prefix_suffix);
+    
+    // groupingBy() 类似与数据库中的GroupBy, 传入一个Function<> 返回 '分组依据' (不想搞的太复杂直接用'恒等函数'), 最后返回一个Map对象
+    // mapping() 将元素流 转换为 另一个类型的元素流, 同时设置'输出容器' (下游收集器)
+    System.out.println();
+    Person black_bing = new Person("BlackWing", 22);
+    Person black_candy = new Person("BlackCandy", 18);
+    person_stream =  Stream.of(black_bing, candy, taike, bing, black_candy);
+    Map<Integer, List<String>> age_map = person_stream.collect(Collectors.groupingBy(Person::get_age, Collectors.mapping( // 这里前面的'age'即为'分类依据', 作为Map的键名<String, >
+      Person::get_name, // 将List<Person> 转换成 List<String> (单独的把名字提出来, 输出到下方容器中) 
+      Collectors.toList() // 收集并最终输出List<String>, 作为Map的键值 Map< , List<String>>
+      )));
+    age_map.forEach((age_category, name_list) -> {
+      System.out.print("年龄" + age_category + "的有: " );
+      name_list.forEach((name) -> { System.out.print(name + ", ");});
+      System.out.println();
+    });
+
+    // partitioningBy() , 类似上面的groupingBy() , 但是前面的'键名'指定为Boolean, 也就是说true一个组, false一个组, 自己传入UnaryOperator进行判断分组
+    System.out.println("\n现在来试试partioningBy(), 将Int流中的奇偶元素 单独各自过滤出来");
+    // 沿用64行的 ascending_number 生成方法 和 73行的 Predicate判断 (filter_even_num)
+    original_stream = Stream.iterate(1, ascending_number).limit(10); // 1 - 10 数据流
+    Map<Boolean, List<Integer>> collected_result = original_stream.collect(Collectors.partitioningBy(filter_even_num));
+    collected_result.forEach((is_even, num_list) -> {
+      if (is_even) {
+        // 展示偶数List
+        System.out.println("collected_result中的偶数有: " + num_list.toString());
+      }else{
+        // 展示基数List
+        System.out.println("collected_result中的基数有: " + num_list.toString());
+      }
+    });
+
+    // summingInt() 求Int元素流总值, averageingInt()求Int流平均值
+    original_stream = Stream.iterate(1, ascending_number).limit(10); // 1 - 10 数据流
+    int stream_total_value = original_stream.collect(Collectors.summingInt(Integer::intValue)); // 必须用Integer的intValue方法对其中的 Integer对象进行拆箱
+    System.out.println("original_stream中的总值为: " + stream_total_value);
+    original_stream = Stream.iterate(1, ascending_number).limit(10);
+    double stream_average_value = original_stream.collect(Collectors.averagingInt(Integer::intValue));
+    System.out.println("original_stream中的平均值为: " + stream_average_value);
+
+    // summarizingInt() 更常用的针对 纯int类 的 操作, 返回一个IntSummaryStatistics对象
+    System.out.println("\n看看summarizingInt()的各种方法");
+    original_stream = Stream.iterate(1, ascending_number).limit(10);
+    IntSummaryStatistics int_stream_summary = original_stream.collect(Collectors.summarizingInt(Integer::intValue));
+    System.out.println("int_stream_summary中共有 " + int_stream_summary.getCount() + " 个值");
+    System.out.println("其中最大值为: " + int_stream_summary.getMax() + ", 最小值为: " + int_stream_summary.getMin() + ", 总和值为: " + int_stream_summary.getSum() + ", 平均值为: " + int_stream_summary.getAverage());
+    System.out.println();
+
+    // .minBy() / .maxBy() 取得最小, 最大值, 需要手动传入一个Comparator对元素流进行排序, 才能取得最小/最大值
+    original_stream = Stream.iterate(1, ascending_number).limit(10);
+    Optional<Integer> manual_get_max_value = original_stream.collect(Collectors.maxBy(Integer::compareTo)); // 这里直接用Integer(Number类)的通用方法 comapreTo() , 直接返回 1 0 -1, 方便的很
+    manual_get_max_value.ifPresent( (value) -> {
+      System.out.println("用maxBy()手动取得的最大值为: " + value);
+    });
+
+    // .reducing() 类似 Stream流中的reduce(), 针对 Stream流最后collect()的数据 进行'临门一脚'的 归约操作
+    original_stream = Stream.iterate(1, ascending_number).limit(10);
+    int sum_of_3_elements =original_stream.limit(3).collect(Collectors.reducing(0, (first_value, second_value) -> { // 定义初始值为0, 准备传入BinaryOperator进行操作
+      return first_value + second_value; // 对过滤出来的 前3个元素 用 BinaryOperator进行累加, 
+    }));
+    System.out.println("Collectors.reducing()取得的前三个值的总和为: " + sum_of_3_elements);
+
+    // .filtering() 同上, 这里是进行'临门一脚'的 最终过滤操作
+    original_stream = Stream.iterate(1, ascending_number).limit(10);
+    // original_stream.collect(Collectors.filtering( (value) -> value>=5 ), Collectors.toList());
 
 
   } // main函数结束

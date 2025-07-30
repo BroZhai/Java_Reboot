@@ -220,3 +220,7 @@ Collectors这个类的坑填了60%了, 明天继续
 突然有事被叫停了半会儿, 回来完成了Collctions工具类笔记
 继续配合Stream的.collect()方法进行了小部分的Collectors工具类实验, 明天继续
 2025.07.29
+
+实践了个Collectors的grouppingBy, 同时发现了遗漏的mapping()方法 XD
+完成了80%的Collectors方法实践, 一会儿继续
+2025.07.30
