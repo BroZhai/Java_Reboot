@@ -236,5 +236,6 @@ Collectors这个类的坑填了60%了, 明天继续
 整理好了DataInput/OutputStream类相关的笔记, 回来继续看看工程
 完善了双方的通信和响应, 追加了注释, Socket网络编程基本完成!
 我靠, 在实现Email通信的时候又踩了一堆大坑, 紧急开补! 先从Properties类入手
-完成了对Properties的简单实验, 整理了对应的笔记, 接下来补补PrintStream 和 PrintWriter
+完成了对Properties的简单实验, 整理了对应的笔记, 接下来补补Java下遗留的'高级数据类型'
+重新梳理了Java中各种'高级数据结构', 明天回来继续研究 & 实践 遗漏的数据结构
 2025.07.31
