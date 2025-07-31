@@ -234,4 +234,5 @@ Collectors这个类的坑填了60%了, 明天继续
 
 修好了'重连'的问题, 本质上的原因是try-catch中的赋值可能并不会成功, 此时编译器会认为 变量'并没有被初始化', 导致编译时报错, 设个null就好了
 草, 发现了个更好用的IO操作 DataInputStream 和 DataOutputStream, 简直是专门给网络传输定制的 XD
+整理好了DataInput/OutputStream类相关的笔记, 回来继续看看工程
 2025.07.31
