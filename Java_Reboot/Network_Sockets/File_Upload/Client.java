@@ -34,7 +34,7 @@ public class Client {
   public static void main(String[] args) throws IOException, UnknownHostException, InterruptedException{
     // 连上服务器
     InetAddress server_ip = InetAddress.getByName("localhost");
-    Socket to_server_socket;
+    Socket to_server_socket = null; // 显示初始化为null, 不然75行会出现编译报错提示 "值未初始化", 原因是try-catch中赋值可能会'失败' XD
     try{
         to_server_socket = new Socket(server_ip,13145);
         // DataInputStream dis = new DataInputStream(to_server_socket.getInputStream());
@@ -72,7 +72,7 @@ public class Client {
     byte[] file_content = Files.readAllBytes(target_file);
     // to_server_socket = new Socket(server_ip,13145); // 创建多个 同socket对象 会导致连接重置! 会让服务端'没反应过来' 从而丢数据
 
-    OutputStream stream_to_server = to_server_socket.getOutputStream();
+    OutputStream stream_to_server = to_server_socket.getOutputStream(); // 解决这里的'多socket'重连问题
     OutputStreamWriter filename_writer = new OutputStreamWriter(stream_to_server);
     BufferedWriter writer = new BufferedWriter(filename_writer);
     writer.write(input_filename + "\n");
