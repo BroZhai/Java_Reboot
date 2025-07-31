@@ -1,6 +1,6 @@
 package Java_Reboot.Network_Sockets.File_Upload;
 
-import java.io.*;
+import java.io.*; // 注意我们在这里引用了新工具类 DataInputStream 和 DataOutputStream, 简直是网络传输的专用工具!!
 import java.net.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +18,7 @@ public class Client {
 
   // 本地文件名RE校验 + 存在验证
   public static boolean validate_filename(String input_filename){
-    Pattern filename_standard = Pattern.compile("^[\\w]+\\.[\\w]{2,}$"); 
+    Pattern filename_standard = Pattern.compile("^[\\w\\s]+\\.[\\w]{2,}$"); 
     boolean match_result = filename_standard.matcher(input_filename).matches();
     if(!match_result){
       System.out.println("\n文件名不合法! 请重新输入");
@@ -41,11 +41,19 @@ public class Client {
     msg_writer.flush();
   }
 
-  // 给服务器发'字节数据' (byte[])
+  // 给服务器发'字节数据', 这里用到一个 新的Java IO类 DataOutputStream, 更好用且全能!
   public static void send_file_to_server(OutputStream file_stream, byte[] file_content) throws IOException{
     DataOutputStream dout = new DataOutputStream(file_stream);
-    dout.writeInt(file_content.length); // 规定'文件大小'
+    dout.writeInt(file_content.length); // 声明'文件大小'
     dout.write(file_content); // 正式写入文件数据
+    dout.flush();
+  }
+
+  // 接收服务器返回消息, 用新工具 DataInputStream 直接读String, 太好用了 XD
+  public static String receive_msg_from_server(InputStream stream) throws IOException{
+    DataInputStream msg_stream = new DataInputStream(stream);
+    String server_response = msg_stream.readUTF();
+    return server_response;
   }
 
 
@@ -60,6 +68,7 @@ public class Client {
         System.out.println("已成功连接至服务器!");
     } catch(Exception e){
       System.out.println("Connection Refuesd, 可能是服务器不存在...");
+      System.exit(1);
     }
     
     // 客户端选择文件并上传
@@ -89,7 +98,7 @@ public class Client {
 
     Path target_file = Paths.get(client_dir.toString(), input_filename);
     byte[] file_content = Files.readAllBytes(target_file);
-    System.out.println(file_content.length);
+    System.out.println("本次上传的文件大小为: "+ file_content.length + " Bytes");
     // to_server_socket = new Socket(server_ip,13145); // 创建多个 同socket对象 会导致连接重置! 会让服务端'没反应过来' 从而丢数据
 
     // 先发送文件名给服务器
@@ -100,12 +109,11 @@ public class Client {
     send_file_to_server(stream_to_server, file_content);
     System.out.println("已尝试向服务器发送 " + input_filename + " 文件");
 
-    // OutputStream stream_to_server = to_server_socket.getOutputStream();
-    // BufferedOutputStream stream_writer  = new BufferedOutputStream(stream_to_server);
-    // stream_writer.write(file_content);
-    // stream_writer.flush();
+    //接收服务器响应
+    InputStream stream_from_server = to_server_socket.getInputStream();
+    String server_response = receive_msg_from_server(stream_from_server);
+    System.out.println(server_response); 
 
-    // stream_writer.write
   } // main函数结束
   
   

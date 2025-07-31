@@ -25,14 +25,21 @@ public class Server {
     return filename;
   }
 
-  // 将输入的InputStream 转换为 byte[] (接收文件数据)
+  // 将输入的InputStream 转换为 byte[], 服务器这边也用了'新类' DataInputStream, 更直接的读取且不用考虑'结尾标记'awa
   public static byte[] input_stream_to_File(InputStream data) throws IOException{
     DataInputStream din = new DataInputStream(data);
     int fileSize = din.readInt();
-    System.out.println("接收到的文件大小为: " + fileSize);
+    System.out.println("接收到的文件大小为: " + fileSize + " Bytes");
     byte[] file_content = new byte[fileSize];
     din.readFully(file_content);
     return file_content;
+  }
+
+  // 服务器发送信息给客户端
+  public static void send_msg_to_client(OutputStream data, String msg) throws IOException{
+    DataOutputStream msg_stream = new DataOutputStream(data);
+    msg_stream.writeUTF(msg);
+    msg_stream.flush();
   }
   
   public static void main(String[] args) throws IOException{
@@ -48,10 +55,13 @@ public class Server {
 
       Path save_file = Paths.get(base_path.toString(),"server_database",filename);
       Files.write(save_file, file_content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE); // 文件不存在创建, 存在则清空再覆写
+      OutputStream stream_to_client = client_socket.getOutputStream();
       if(Files.exists(save_file)){
-        System.out.println("成功接收文件 " + filename);
+        System.out.println("成功接收文件 " + filename + ", 存储在了/" + save_file.getName(5) + "目录下");
+        send_msg_to_client(stream_to_client, "来自服务器的回应: 成功接收了文件 " + filename);
       }else{
         System.out.println("接收失败...");
+        send_msg_to_client(stream_to_client, "来自服务器的回应: 发生了异常, 接收失败... ");
       }
       
     }
