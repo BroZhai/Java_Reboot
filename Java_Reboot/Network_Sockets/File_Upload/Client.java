@@ -16,6 +16,7 @@ public class Client {
   // 全局变量
   static Path base_path = Path.of(System.getProperty("user.dir"),"Java_Reboot","Network_Sockets","File_Upload");
 
+  // 本地文件名RE校验 + 存在验证
   public static boolean validate_filename(String input_filename){
     Pattern filename_standard = Pattern.compile("^[\\w]+\\.[\\w]{2,}$"); 
     boolean match_result = filename_standard.matcher(input_filename).matches();
@@ -30,6 +31,24 @@ public class Client {
     }
     return match_result && file_exists;
   }
+
+  // 给服务器发'文字消息' (String, 这里先不管char[]了 :3)
+  public static void send_msg_to_server(OutputStream msg_stream, String message) throws IOException{
+    OutputStreamWriter writer = new OutputStreamWriter(msg_stream);
+    BufferedWriter msg_writer = new BufferedWriter(writer);
+    // msg_writer.write(message + "\n",0,message.length()); // .write(字符串, 偏移offset, 读取长度) Tips: 读取整个String的话, 偏移和读取长度一般可以不写
+    msg_writer.write(message + "\n"); // 一定记得要加 '\n' 作为换行终止符, 告诉服务器那边的readLine() 表示'这行完了'
+    msg_writer.flush();
+  }
+
+  // 给服务器发'字节数据' (byte[])
+  public static void send_file_to_server(OutputStream file_stream, byte[] file_content) throws IOException{
+    DataOutputStream dout = new DataOutputStream(file_stream);
+    dout.writeInt(file_content.length); // 规定'文件大小'
+    dout.write(file_content); // 正式写入文件数据
+  }
+
+
 
   public static void main(String[] args) throws IOException, UnknownHostException, InterruptedException{
     // 连上服务器
@@ -70,16 +89,16 @@ public class Client {
 
     Path target_file = Paths.get(client_dir.toString(), input_filename);
     byte[] file_content = Files.readAllBytes(target_file);
+    System.out.println(file_content.length);
     // to_server_socket = new Socket(server_ip,13145); // 创建多个 同socket对象 会导致连接重置! 会让服务端'没反应过来' 从而丢数据
 
+    // 先发送文件名给服务器
     OutputStream stream_to_server = to_server_socket.getOutputStream(); // 解决这里的'多socket'重连问题
-    OutputStreamWriter filename_writer = new OutputStreamWriter(stream_to_server);
-    BufferedWriter writer = new BufferedWriter(filename_writer);
-    writer.write(input_filename + "\n");
-    writer.flush();
+    send_msg_to_server(stream_to_server, input_filename); // 封装了'发文字消息'方法
     
-
-
+    // 再发送文件内容给服务器
+    send_file_to_server(stream_to_server, file_content);
+    System.out.println("已尝试向服务器发送 " + input_filename + " 文件");
 
     // OutputStream stream_to_server = to_server_socket.getOutputStream();
     // BufferedOutputStream stream_writer  = new BufferedOutputStream(stream_to_server);
