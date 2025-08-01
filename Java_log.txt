@@ -244,4 +244,5 @@ Collectors这个类的坑填了60%了, 明天继续
 整理好了Vector相关的笔记, 继续看看Stack
 简单完成了Stack的笔记, 准备实践一下Vector 和 Stack
 简单完成了Vector的所有实验, 继续看看Stack
+完成了对Stack的实验, 一会儿回来继续看剩下的数据结构
 2025.08.01

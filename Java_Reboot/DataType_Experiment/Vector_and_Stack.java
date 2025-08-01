@@ -7,10 +7,29 @@ import java.util.Vector;
 import java.util.Arrays;
 import java.util.Enumeration; // 枚举类 
 import java.util.List;
+import java.util.Stack;
 
 public class Vector_and_Stack {
 
   // 在本类中, 我们来玩玩 Vector 及其子类 Stack栈
+
+  // Stack相关的自定义'可视化'方法
+  public static void showPush(Stack<Integer> stack,int value){
+    stack.push(value);
+    System.out.println("已将"+ value +"压入栈顶");
+  }
+
+  public static void showStack(Stack<Integer> stack){
+    System.out.print("当前Stack中的元素从底 到 顶部有: ");
+    for(Integer i: stack){
+      System.out.print(i + " ");
+    }
+  }
+
+  public static void showPop(Stack<Integer> stack){
+    int popped_num = stack.pop();
+    System.out.println("pop()移除了" + popped_num);
+  }
 
   public static void main(String[] args) {
 
@@ -54,6 +73,18 @@ public class Vector_and_Stack {
 
     /* Stack实验区 */
     System.out.println("\n现在来看看Stack");
+    Stack<Integer> my_stack = new Stack<>();
+    showPush(my_stack, 8); // 底部
+    showPush(my_stack, 9);
+    showPush(my_stack, 6); // 当前顶部
+    showStack(my_stack); // 8 9 6
+    System.out.println("当前Stack为空吗: " + my_stack.empty()); // false
+    System.out.println("从顶部开始数, 元素6的位置位于: " + my_stack.search(8)); // 3, 顶部从1开始数
+    showPop(my_stack);
+    showPush(my_stack, 2);
+    showPush(my_stack, 5);
+    showStack(my_stack);
+    
 
   } // main函数结束 
   
