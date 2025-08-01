@@ -242,4 +242,5 @@ Collectors这个类的坑填了60%了, 明天继续
 
 补充了枚举相关的知识点, 准备看看Vector 和 Stack
 整理好了Vector相关的笔记, 继续看看Stack
+简单完成了了Stack的笔记, 准备实践一下Vector 和 Stack
 2025.08.01
