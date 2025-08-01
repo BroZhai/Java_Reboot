@@ -245,4 +245,5 @@ Collectors这个类的坑填了60%了, 明天继续
 简单完成了Stack的笔记, 准备实践一下Vector 和 Stack
 简单完成了Vector的所有实验, 继续看看Stack
 完成了对Stack的实验, 一会儿回来继续看剩下的数据结构
+复习了下树, 堆Heap, 补充了下对应的笔记, 同时发现HashTable其实也是Map接口的实现类
 2025.08.01
