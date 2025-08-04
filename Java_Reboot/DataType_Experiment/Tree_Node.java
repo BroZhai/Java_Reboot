@@ -118,7 +118,7 @@ public class Tree_Node {
     insert_node(baseNode, node5);
     insert_node(baseNode, node6);
     insert_node(baseNode, node7);
-    insert_node(baseNode, new myNode(44)); // 插入一个新的测试值, 应当插入45的左侧, 但右侧仍未空
+    insert_node(baseNode, new myNode(44)); // 插入一个新的测试值, 应当插入45的左侧, 但右侧仍为空
 
 
     // 最终期望排序 19, 28, 31, 33, 35, 40, 45
