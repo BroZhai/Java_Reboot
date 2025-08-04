@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 public class Tree_Node {
   // 我们再来Java中玩一下 树, 尝试实现一个'二分查找树'
@@ -120,6 +118,7 @@ public class Tree_Node {
     insert_node(baseNode, node5);
     insert_node(baseNode, node6);
     insert_node(baseNode, node7);
+    insert_node(baseNode, new myNode(44)); // 插入一个新的测试值, 应当插入45的左侧, 但右侧仍未空
 
 
     // 最终期望排序 19, 28, 31, 33, 35, 40, 45
@@ -136,11 +135,11 @@ public class Tree_Node {
     
     search_node.ifPresent( (serach_node) -> {
       System.out.println("\n取得" + serach_node.value + "的信息");
-      System.out.println("左节点: " + serach_node.leftNode.value);
-      System.out.println("右节点: " + serach_node.rightNode.value);
+      // 遍历到'根节点'时, 注意处理'子节点为null'的问题 (注意内部括号运算的优先级! 先'求值', 再拼凑输出)
+      System.out.println("左节点: " + (serach_node.leftNode == null ? "为空" : serach_node.leftNode.value));
+      System.out.println("右节点: " + (serach_node.rightNode == null ? "为空" : serach_node.rightNode.value));
       return;
     } );
-    System.out.println("\n输入的值不存在!");
     
 
   } // main函数结束
