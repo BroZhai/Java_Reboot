@@ -16,24 +16,33 @@ public class Tree_Node {
   public static void insert_node(List<myNode> nodeList, myNode newNode, myNode baseNode){
       int cur_index = nodeList.indexOf(baseNode);
       Optional<myNode> cur_left_node = Optional.ofNullable(nodeList.get(cur_index*2+1));
-      myNode cur_right_node = nodeList.get(2*cur_index+2);
-      if(newNode.value > baseNode.value){
-        if(cur_right_node == null){
-          nodeList.set(2*cur_index+2, newNode);
-          return;
-        }
-        insert_node(nodeList, newNode, cur_right_node); 
-      }else if(newNode.value < baseNode.value){
-        if(cur_left_node == null){
+      Optional<myNode> cur_right_node = Optional.ofNullable(nodeList.get(cur_index*2+2));
 
-        }
+      // 和当前node进行比较
+      if(newNode.value < baseNode.value){ // 小于当前节点
+        cur_left_node.ifPresent((left_node) -> { // 左节点存在, 进行进一步的递归比较
+          insert_node(nodeList, newNode, left_node);
+        });
+        // 当前节点的左节点为空, 直接赋值到左节点上
+        baseNode.leftNode = newNode;
+        nodeList.add(cur_index-1, newNode);
+        return;
+      }else if(newNode.value > baseNode.value){
+        cur_right_node.ifPresent((rightNode) -> { // 右节点存在, 进一步递归比较
+          insert_node(nodeList, newNode, rightNode);
+        });
+        // 当前右节点为空, 直接赋值
+        baseNode.rightNode = newNode;
+        nodeList.add(cur_index, newNode);
+        return;
       }
 
     }
 
+    public static void show_list(List<myNode> nodeList){
       
     }
-  }
+
 
 
   static class myNode{ // 自定义内部类 '树', 每个树包含 自己的构造函数, 值, 左叶子节点, 右叶子节点
@@ -47,7 +56,7 @@ public class Tree_Node {
 
 
   public static void main(String[] args) {
-    myNode node1 = new myNode(33);
+    myNode baseNode = new myNode(33);
     myNode node2 = new myNode(28);
     myNode node3 = new myNode(40);
     myNode node4 = new myNode(19);
@@ -55,7 +64,9 @@ public class Tree_Node {
     myNode node6 = new myNode(35);
     myNode node7 = new myNode(45);
 
-    List<myNode> nodeList = List.of(node1); // 默认排序 
+    List<myNode> nodeList = List.of(baseNode); // 默认排序 
+    insert_node(nodeList, node2, baseNode);
+    insert_node(nodeList, node3, baseNode);
     // 最终期望排序 19, 28, 31, 33, 35, 40, 45
 
 
