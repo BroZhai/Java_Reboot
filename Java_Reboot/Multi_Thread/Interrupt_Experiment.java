@@ -61,7 +61,7 @@ public class Interrupt_Experiment {
     loop_thread.start();
     Thread.sleep(500); // main进程休眠0.5秒 (让loop_thread运行0.5秒)
     loop_thread.interrupt();
-    loop_thread.join(); // 此时不会往下执行了, 等待内部进程(LoopThread)结束
+    loop_thread.join(); // 此时不会往下执行了, 等待内部进程(LoopThread)结束 (LoopThread又会等待20ms让print_thread优先输出终止信号)
     Thread.sleep(20); // 等待LoopThread中断信号输出
     
     System.out.println("最外层的main结束");  // main的中断信号输入
