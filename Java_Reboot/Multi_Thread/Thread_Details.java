@@ -22,7 +22,7 @@ public class Thread_Details {
         Thread.sleep(7000); // 最长的休眠时间, 确保该线程'留在最后'被执行 (最长的'等待被执行'时间)
         System.out.println("诶嘿,我是 "+ Thread.currentThread().getName() +", 我从开始到现在共等了7秒, 轮到我在最后给大伙收个尾! ");
       } catch (InterruptedException e) {
-        System.out.println("线程 "+ Thread.currentThread().getName() + "被意外中断!");
+        System.out.println("线程 "+ Thread.currentThread().getName() + "被interrupt()中断!");
       }
       
     });
