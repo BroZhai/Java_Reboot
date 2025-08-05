@@ -31,7 +31,7 @@ public class Thread_Details {
     // System.out.println("main函数结束");
 
     Thread top_thread = new Thread( () -> {
-      System.out.println("我是最高优先级的Thread, 按理来说, 我应该会第一时间被最先处理 :3"); // 确实, 但只是位于'就绪队列'的最高优先级, 并不会'抢断'当前CPU划分的时间片, 只是让CPU知道时间片结束后要优先处理你 (大概率出现在'分隔符'后)
+      System.out.println("我是最高优先级的Thread, 按理来说, 我应该会第一时间被最先处理 :3"); // 确实, 但只是位于'就绪队列'的最高优先级, 并不会'抢断'当前CPU划分的时间片, 只是让CPU知道时间片结束后要优先处理你
     });
     top_thread.setPriority(10);
     top_thread.start();
@@ -51,7 +51,7 @@ public class Thread_Details {
     System.out.println("当前仍活跃的线程数共有: " + Thread.activeCount()); // 3个线程 : main自身, 4秒延迟的suspend_thread, 7(4+3)秒延迟的my_threa
     suspend_thread.join(); // 这里 suspend_thread() 插了 main的队, suspend_thread()执行完后才会继续跑main()
 
-    System.out.println("main: 我靠这家伙总算跑完了xwx"); // main等待suspend_thread() 跑完后才执行的语句
+    System.out.println("main: 我靠这家伙总算跑完了xwx"); // main等待suspend_thread() 跑完后才执行的语句 (对应52行的join()等待)
 
 
   } // main结束
