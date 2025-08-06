@@ -8,19 +8,30 @@ public class Synchronize_Methods {
 
     // 第一种写法, 直接在方法内部声明'临界区', 这里因为是'静态方法', 锁在 Classmate.class上, 保护了 类的'全局变量' total_count
     public static void add(){
-      synchronized(Classmate.class){
+      synchronized(System.out){
         total_count++;
       }
     }
 
     // 第二种写法, 在方法上直接追加 synchronized, 因为方法仍是静态方法, 锁还是在 Classmate.class上
-    public synchronized static void sub(){
-      total_count--;
-      System.out.println("有人跑路了QAQ...");
+    public static void sub(){
+      synchronized(System.out){
+        if(total_count <= 0 ){
+        System.out.println("队列中已经没得同学了...正在等待新同学加入...");
+        }else{
+          total_count--;
+          System.out.println("有人跑路了QAQ..."); 
+        }
+      }
+
+
     }
 
-    public synchronized int getTotal_count() {
-      return Integer.valueOf(total_count); // 直接返回一个'字面量', 防止total_count被外部修改, 外边也不能直接'改字面量' XD
+    public static void getTotal_count() {
+      synchronized(System.out){ // 我们直接锁住'系统'输出流 (限制此时只用我能打印信息!)
+        System.out.println("当前的总人数为: " + total_count);
+      }
+      // return Integer.valueOf(total_count); // 直接返回一个'字面量', 防止total_count被外部修改, 外边也不能直接'改字面量' XD
     }
 
   }
@@ -33,7 +44,7 @@ public class Synchronize_Methods {
         Classmate.add();
         System.out.println("加入了男孩子");
         try {
-          Thread.sleep(2000);
+          Thread.sleep(2500);
         } catch (InterruptedException e) {
           System.out.println("boy_join在sleep时被意外中断了");
         }
@@ -56,24 +67,20 @@ public class Synchronize_Methods {
 
     Thread random_leave = new Thread( () -> {
       while(true){
-        if(Human_Resource.getTotal_count() <= 0){
-        System.out.println("队列中已经没得同学了...正在等待新同学加入...");
-      }else{
         Classmate.sub();
-      }
-      
-      try {
-        Thread.sleep(2000);
-      } catch (InterruptedException e) {
-        System.out.println("random_leave在sleep时被意外中断了");
-      }
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException e) {
+          System.out.println("random_leave在sleep时被意外中断了");
+        }
     }
 
     });
 
     Thread check_people = new Thread(() -> {
-      while (true) {
-        System.out.println("当前总人数: " + Human_Resource.getTotal_count());
+      while (true) { // 注: 这里会有'过早读取'问题(不可重复读), 如刚读了数据后, 数据就发生了变化...
+        // System.out.println("当前总人数: " + Classmate.getTotal_count() + "\n");
+        Classmate.getTotal_count();
         try {
           Thread.sleep(2500);
         } catch (InterruptedException e) {
