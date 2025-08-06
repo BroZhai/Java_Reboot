@@ -6,14 +6,13 @@ public class Synchronize_Methods {
   static class Classmate{
     public static volatile int total_count = 0; // 类的'全局变量' (所有实例通用)
 
-    // 第一种写法, 直接在方法内部声明'临界区', 这里因为是'静态方法', 锁在 Classmate.class上, 保护了 类的'全局变量' total_count
-    public static void add(){
-      synchronized(System.out){
-        total_count++;
+    public static void add(boolean is_boy){
+      synchronized(System.out){ // 锁住控制台
+      total_count++;
+      System.out.println("加入了" + (is_boy ? "男孩子" : "妹子"));
       }
     }
 
-    // 第二种写法, 在方法上直接追加 synchronized, 因为方法仍是静态方法, 锁还是在 Classmate.class上
     public static void sub(){
       synchronized(System.out){
         if(total_count <= 0 ){
@@ -41,10 +40,9 @@ public class Synchronize_Methods {
 
     Thread boy_join = new Thread( ()-> {
       while (true) {
-        Classmate.add();
-        System.out.println("加入了男孩子");
+        Classmate.add(true);
         try {
-          Thread.sleep(2500);
+          Thread.sleep(2000);
         } catch (InterruptedException e) {
           System.out.println("boy_join在sleep时被意外中断了");
         }
@@ -54,8 +52,7 @@ public class Synchronize_Methods {
 
     Thread girl_join = new Thread( ()-> {
       while(true){
-        Classmate.add();
-        System.out.println("加入了妹子");
+        Classmate.add(false);
         try {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
