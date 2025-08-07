@@ -289,4 +289,5 @@ Collectors这个类的坑填了60%了, 明天继续
 
 实践了wait 和 notify, 一次成功! 整理了对应的笔记
 大体了解了ReentrantLock是个什么玩意, 整理了对应的笔记
+知道了ReentrantLock的Condition是怎么用的, 准备进行实验
 2025.08.07
