@@ -58,6 +58,8 @@ public class Thread_Pool {
     System.out.println("线程池已关闭任务入口, shutdown后剩余运行时间为2秒...");
     // awaitTermination设置一个'线程关闭后计时器', 在指定时间内'所有任务完成' + '所有线程终止'返回true, 超时 或 任务未完成返回false
     try {
+
+      // 设置线程shutdown后的等待时间为2秒, 若未能关闭则继续等2秒, 直至成功关闭      
       boolean shutdown_signal = thread_pool.awaitTermination(2, TimeUnit.SECONDS); 
       while(!shutdown_signal){
         System.out.println("线程池未能shutdown, 内部仍有任务再跑 / 进程未终止, 继续等待2秒...");
@@ -68,7 +70,7 @@ public class Thread_Pool {
       System.out.println("线程池当前Terminated了吗? " + (thread_pool.isTerminated()? "Yes":"No")); 
     } catch (InterruptedException e) {
       System.out.println("线程池终止前被意外中断!");
-    } // 设置线程池运行5秒后终止 
+    } 
 
     
     // System.out.println(shutdown_list.toString());
