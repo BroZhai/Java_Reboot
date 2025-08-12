@@ -316,4 +316,5 @@ Collectors这个类的坑填了60%了, 明天继续
 完成了对ScheduleThreadpool的实践
 大体了解了Future类是个什么东西, 就是取Callable创建线程的返回值用的, 整理了对应的笔记
 具体实践了Future类的用法
+补充了有关FutureTask类的内容和笔记, 本质上和Future一个东西, 但是还能当成Runnable来用 XD
 2025.08.12

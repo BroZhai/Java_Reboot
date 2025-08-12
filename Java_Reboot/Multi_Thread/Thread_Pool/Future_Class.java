@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 public class Future_Class {
   // 我们来研究一下Future这个类, 专门用于接收Callable接口创建线程的执行返回值
   // 本质上和Optioal类的理念有点像
+  // Tips: FutureTask 本质上和 Future是同一个东西, 但是FutureTask还能直接当成Runnable用, 具有'双重身份' XD
   
   public static void main(String[] args) throws InterruptedException, ExecutionException {
     // 创建一个Callable任务对象, 提交到线程池中
