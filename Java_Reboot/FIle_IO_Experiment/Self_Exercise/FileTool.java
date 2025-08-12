@@ -11,6 +11,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+// 调用windows文件选择管理器 2025.08.12追加
+import java.awt.FileDialog;
+import java.awt.Frame;
+
 // 获取标准输入流
 import java.util.Scanner;
 
@@ -290,6 +294,14 @@ public class FileTool {
     return suffix_sets;
   }
 
+  // 调用windows文件管理器进行文件路径的选择, 返回String 文件绝对路径 (日后可以配合nio Files类进行处理awa)
+  public static String show_UI(){
+    FileDialog dialog = new FileDialog((Frame) null, "选择文件", FileDialog.LOAD);
+    dialog.setVisible(true);
+    String filePath = dialog.getDirectory() + dialog.getFile(); // 拼接路径
+    System.out.println("取得的文件路径为: " + filePath);
+    return filePath;
+  }
 
   /*
    * ---------------------------------分割线-----------------------------------------
@@ -771,9 +783,12 @@ public class FileTool {
         break;
 
       case "0":
-        System.out.println("欢迎下次光临~~");
-        keep_running=false;
-        user_input.close();
+        System.out.println("正在等待用户选择, 留意新蹦出来的窗口...");
+        show_UI();
+
+        // System.out.println("欢迎下次光临~~");
+        // keep_running=false;
+        // user_input.close();
         break;
 
       default:
