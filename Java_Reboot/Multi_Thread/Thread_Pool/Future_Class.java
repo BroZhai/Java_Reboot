@@ -27,7 +27,7 @@ public class Future_Class {
 }
 
 // 自定义一个Callable线程
-class MyCallable implements Callable {
+class MyCallable implements Callable<String> { // 这里就要声明'返回数据类型'
   public String call() throws InterruptedException{ // 重写Callable的call()方法
     Thread.currentThread().setName("MyCallable");
     System.out.println("我是"+Thread.currentThread().getName()+", 2秒后取得返回结果");
