@@ -318,5 +318,5 @@ Collectors这个类的坑填了60%了, 明天继续
 具体实践了Future类的用法
 补充了有关FutureTask类的内容和笔记, 本质上和Future一个东西, 但是还能当成Runnable来用 XD
 往之前的实践项目中追加了有关Windows文件管理窗口选择文件的相关awt方法, 先知道怎么用先, 日后再深究
-Java多线程编程暂时告一段落, 回来新建一个Maven项目看看Junit是怎么用的, 搞完之后Java就基本毕业了 ^w^ (Go SpringBoot or Python)
+Java多线程编程暂时告一段落, 回来新建一个Maven项目看看Junit是怎么用的, 搞完之后还有看看JDBC的的用法 (还有精力可以看看SprintBoot or Start 皮炎通红)
 2025.08.12
