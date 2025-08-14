@@ -36,7 +36,7 @@ class Human{
    * @param name 定义人类名称
    * @param age 定义用户年龄
    * @param sex 定义用户性别 (只可以是{@link #MALE} 或 {@link #FEMALE})
-   * @thorws IllegalArgumentException 当性别参数无效时则会抛出该异常
+   * @throws IllegalArgumentException 当性别参数无效时则会抛出该异常
    * 
    */
   public Human(String name, int age, int sex)throws IllegalArgumentException{
@@ -80,12 +80,17 @@ class Human{
  * 
  */
 class Programmer extends Human{
+  /**
+   * 程序员特有的'码龄'
+   */
   private int coding_age;
 
   /**
-   * {@inheritDoc}
-   * 上面使用了inheritDoc自动匹配了父级的 构造函数 的 注解 (直接办下来照用)
-   * @param coding_age 新加的'码龄'参数
+   * 程序员类的构造函数
+   * @param name 名称
+   * @param age 年龄
+   * @param sex 性别
+   * @param coding_age 开发经验 (新增)
    */
   public Programmer(String name, int age, int sex, int coding_age){
     super(name, age, sex);
@@ -101,18 +106,28 @@ class Programmer extends Human{
   }
 
   /**
+   * {@inheritDoc}
    * 重写了Human父级的introduce方法
-   * @see #getCodingAge(); 取得码龄的方法
+   * @see #getCodingAge() 取得码龄的方法
+   * 
    */
+  @Override
   public String introduce(){
     return "你好, 我是程序员" + getName() + ", 今年" + getAge() + "岁, 拥有" + getCodingAge() + "年码龄";
   }
 
 }
 
+/**
+ * 运行主类
+ */
 public class Javadoc_Experiment {
   // 我们来研究一下javadoc里面的各种关键字注解怎么用, 以及生成一个API报告
 
+  /**
+   * main函数运行区
+   * @param args 命令行传入形参
+   */
   public static void main(String[] args) {
     Human person1 = new Human("IceWing", 22,2);
     System.out.println(person1.introduce());

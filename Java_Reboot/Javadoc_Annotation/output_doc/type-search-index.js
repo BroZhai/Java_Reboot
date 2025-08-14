@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"Java_Reboot.Javadoc_Annotation","l":"Human"},{"p":"Java_Reboot.Javadoc_Annotation","l":"Javadoc_Experiment"},{"p":"Java_Reboot.Javadoc_Annotation","l":"Programmer"},{"l":"所有类和接口","u":"allclasses-index.html"}];updateSearchResults();
